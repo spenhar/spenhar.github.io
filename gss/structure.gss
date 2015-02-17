@@ -1,0 +1,11 @@
+// GSS styles
+
+#title[top-left] == 50;
+#subtitle[top-left] == #title[top-left]+50;
+#subtitle[left] == 50;
+
+#footer[left] == 50;
+
+
+
+// footer[bottom] == 1000;
