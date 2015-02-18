@@ -5,14 +5,14 @@
 #subtitle[left] == 50;
 
 #footer[left] == 25;
-#footer[top] == 750;
+#footer[top] == ::window[bottom] - 50;
 
 // #title {
 //   border: 1px solid red;
 // }
 
-// #footer {
-//   border: 1px solid white;
-// }
+#footer {
+  border: 1px solid white;
+}
 
 // footer[bottom] == 1000;
