@@ -11,8 +11,8 @@
 //   border: 1px solid red;
 // }
 
-#footer {
-  border: 1px solid white;
-}
+// #footer {
+//   border: 1px solid white;
+// }
 
 // footer[bottom] == 1000;
