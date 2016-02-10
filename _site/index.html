@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width initial-scale=1" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Spencer Harrison</title>
+    <meta name="description" content="Strategic, interdisciplinary design for the everybody.
+">
+    <link rel="canonical" href="http://spenhar.com//">
+    <link rel="stylesheet" href="/css/normalize.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <!-- Slick Slider -->
+    <!-- <link rel="stylesheet" type="text/css" href="/slick/slick.css"/> -->
+    <!-- <link rel="stylesheet" type="text/css" href="/slick/slick-theme.css"/> -->
+    <!-- <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/jquery.slick/1.5.9/slick.css"/> -->
+    <!-- Add the slick-theme.css if you want default styling -->
+    <!--  <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/jquery.slick/1.5.9/slick-theme.css"/> -->
+    <!-- <script type="text/javascript" src="//cdn.jsdelivr.net/jquery.slick/1.5.9/slick.min.js"></script> -->
+
+    <!-- Load the Paper.js library -->
+    <script type="text/javascript" src="js/paper-full.js"></script>
+    <!-- Load external PaperScript and associate it with myCanvas -->
+    <script type="text/paperscript" src="js/raster.js" canvas="myCanvas"></script>
+    <!-- D3 -->
+    <script src="//d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <!-- Google Fonts -->
+    <link href='http://fonts.googleapis.com/css?family=Raleway:400,300,600' rel='stylesheet' type='text/css'>
+    <!-- Typekit -->
+    <script src="//use.typekit.net/ykf3igh.js"></script>
+    <script>try{Typekit.load();}catch(e){}</script>
+    <!-- <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-73554511-1', 'auto');
+      ga('send', 'pageview');
+    </script> -->
+</head>
+
+
+  <body>
+    <svg style="position: absolute; width: 0; height: 0;" width="0" height="0" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve">
+  <defs>
+    <symbol id="chevron" viewBox="0 0 32 32" enable-background="new 0 0 32 32" x="0px" y="0px">
+      <path d="M16,21.2L27.6,9.6L29,11L17.4,22.6L16,24l-1.4-1.4L3,11l1.4-1.4L16,21.2z"/>
+    </symbol>
+    <symbol id="map-marker" viewBox="0 0 512 512" enable-background="new 0 0 512 512" x="0px" y="0px">
+      <path d="M256,0C149.969,0,64,85.969,64,192c0,43.188,14.25,83,38.313,115.094L256,512l153.688-204.906
+        C433.75,275,448,235.188,448,192C448,85.969,362.031,0,256,0z M256,320c-70.688,0-128-57.313-128-128S185.313,64,256,64
+        s128,57.313,128,128S326.688,320,256,320z"/>
+    </symbol>
+    <symbol id="chevron-cut" viewBox="0 0 60 60" enable-background="new 0 0 60 60" x="0px" y="0px">
+      <path d="M30,2C14.5,2,2,14.5,2,30c0,15.5,12.5,28,28,28s28-12.5,28-28C58,14.5,45.5,2,30,2z M31.4,35.8L30,37.2l-1.4-1.4L17,24.2
+ 	      l1.4-1.4L30,34.4l11.6-11.6l1.4,1.4L31.4,35.8z"/>
+    </symbol>
+  </defs>
+</svg>
+
+
+    <div class="wrap">
+          <canvas id="myCanvas" resize></canvas>
+
+  <section id="brand" class="full-screen bg-gray dis-t pos-rel pad-all-l" role="masthead">
+    <div class="v-center">
+      <div class="measure float-center pad-b-xl">
+        <h1 class=""> Spencer Harrison </h1>
+        <p>
+          Born and raised in Salt Lake City, UT. I was always obsessing over inventing sounds and new devices.
+          Now I get to do that kidstuff as a grown-up. It's a christmas miracle.
+          I once got a reses pieces stuck in my nose.
+        </p>
+        <p>
+          That sucked.
+        </p>
+        <!-- <img src="img/studio/morf-logo15fps.gif" alt="Morf"> -->
+        <!-- <h2 class="pad-b-xl">Spencer Harrison</h2> -->
+       </div>
+    </div>
+  </section>
+
+  <section id="info" class="full-screen bg-white dis-t pos-rel pad-all-l">
+    <div class="v-center">
+      <div class="About float-center measure">
+        <h1 class=""> Other things </h1>
+        <p>
+          I may not have more to say.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="work" class="bg-gray pos-rel pad-b-l">
+
+      <!-- <div class="pad-all-m b-b-1sw">
+        <div class="work-carousel">
+
+          <div> <img data-lazy="img/work/wm/woolleylogo.jpg" alt="The Woolley Market Double Handle Saw Logo"> </div>
+          <div> <img data-lazy="img/work/wm/woolleygrid.jpg" alt="Clockwise from top left, window painting, coffee cups, a 1919 Model T farm truck, gift cards, painting cold beer on the exterior, and a fisherman environmental sign inspired by a 1920's skagit valley photo."> </div>
+          <div> <img data-lazy="img/work/wm/woolleyrear.jpg" alt="The Rear entrance to the Woolley Market, paint on brick."> </div>
+          <div> <img data-lazy="img/work/wm/woolleyneon.jpg" alt="The Woolley Market Logo in Neon mounted to a 40-inch saw blade salvaged from a local mill."> </div>
+          <div> <img data-lazy="img/work/wm/woolleycorner.jpg" alt="View of the market from Main and State Streets, in Sedro-Woolley Washington. Manufactured marquee sign and painted exterior signs."> </div>
+          <div> <img data-lazy="img/work/wm/woolleybutcher.jpg" alt="Butcher paper for the deli."> </div>
+          <div> <img data-lazy="img/work/wm/woolleymural.jpg" alt="Gateway to the North Cascades has long been the town motto for Sedro Woolley, so we painted it into a mural next to an arial photo showing the town and it's relationship to Mt. Baker."> </div>
+        </div>
+        <div class="info-box">
+          <p class="mar-all-0"> Woolley Market</p>
+          <span class="uppercase"> <small> Branding | Signage | Environmental Design | Packaging | Apparel | Special Items </small> </span>
+        </div>
+      </div> -->
+
+      <!-- <div class="pad-all-m b-b-1sw">
+        <div class="work-carousel">
+          <div> <img data-lazy="img/work/thrill/thrillderness.jpg" alt="Thrillderness logo set over the opening of a momentarily dry Yosemite Falls."> </div>
+          <div> <img data-lazy="img/work/thrill/thrillderness_4.jpg" alt="Clockwise from top left, Thrillderness Shaka Hand Logo with tagline Go Far and Shred Gnar, black and white hike photograph, Boy scout style handshake logo with text reading the handshake, standing atop clouds at Whistler summit, illustration of compasses, and soaking in hot springs. "> </div>
+          <div> <img data-lazy="img/work/thrill/thrillderness_5.jpg" alt="Mountain Bikers on ridge wearing Thrillderness apparel."> </div>
+          <div> <img data-lazy="img/work/thrill/thrillderness_3.jpg" alt="Screenshots of Thrillderness website presented in a large desktop-like browser and phone browser."> </div>
+        </div>
+        <div class="info-box">
+          <p class="mar-all-0"> Thrillderness</p>
+          <span class="uppercase"> <small> Branding | UX | UI | Web Development | Experiential Design | Apparel </small> </span>
+        </div>
+      </div> -->
+
+      <div class="pad-all-m b-b-1sw">
+        <div class="work-carousel">
+          <div> <img data-lazy="img/work/grid/mobileUIdesign.jpg" alt="An example of The Grid's User Interface on a mobile browser."> </div>
+          <!-- <div class="title-slide"><h2>The Grid</h2></div> -->
+          <div> <img data-lazy="img/work/grid/desktopUIdesign.jpg" alt="An example of The Grid's User Interface on a desktop browser."> </div>
+          <!-- <div> <img data-lazy="img/work/grid/ux-grid.jpg" alt=""> </div> -->
+          <div class="title-slide"><img data-lazy="img/work/grid/leigh-bw.jpg" alt="Two men critiquing User-Experience process post-it notes on a wall."> </div>
+        </div>
+        <div class="info-box">
+          <p class="mar-all-0"> The Grid</p>
+          <span class="uppercase"> <small> UX | UI | Visual Design | Prototyping </small> </span>
+        </div>
+      </div>
+
+      <!-- <div class="pad-all-m b-b-1sw">
+        <div class="work-carousel">
+          <div> <img data-lazy="img/work/bnb/bikebuild_1.jpg" alt=""> </div>
+          <div> <img data-lazy="img/work/bnb/bikebuild_2.jpg" alt=""> </div>
+          <div> <img data-lazy="img/work/bnb/bikebuild_3.jpg" alt=""> </div>
+          <div> <img data-lazy="img/work/bnb/bikebuild_4.jpg" alt=""> </div>
+        </div>
+        <div class="info-box">
+          <p class="mar-all-0"> Bike &amp; Build</p>
+          <span class="uppercase"> <small> Apparel | UX | UI | Visual Design | Data Visualization </small> </span>
+        </div>
+      </div> -->
+
+  </section>
+  <section id="skills" class="full-screen bg-gray dis-t pos-rel pad-all-l">
+    <!-- <h1>Skill Graph</h1> -->
+    <div class="v-center cf">
+    <!-- <h1>Skill Graph</h1> -->
+      <div class="float-center measure">
+        <h1> Skills </h1>
+        <ul id="skillsList" class="list-reset pad-t-s">
+          <li> Strategy</li>
+          <li> Branding</li>
+          <li> User Experience</li>
+          <li> Visual Design</li>
+          <li> Web &amp; App Design</li>
+          <li> Front &amp; Back End Development</li>
+          <li> Prototyping</li>
+          <li> Installations &amp; Environments</li>
+          <li> Experiential Design</li>
+          <li> Product Design </li>
+          <li> Big Dreaming</li>
+          <li> Weird Thinking</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" class="full-screen  dis-t pos-rel text-center pad-all-l bg-red">
+    <div class="v-center">
+      <h3> Don't lose touch. </h3>
+      <p class="float-center">
+        <a class="button dis-b s-dis-ib mar-b-s" href="mailto:yo@morf.studio?subject=I%20Was%20Stalking%20Your%20Site&body=I'm dying to know...">spencerjharrison@gmail.com</a>
+        <a class="button dis-b s-dis-ib mar-b-s" href="tel:19195379227"> (1)801.706.8265 </a>
+      </p>
+
+      <div>
+        <svg class="icon"><use xlink:href="#map-marker"></use></svg>
+      </div>
+      <p class="float-center">
+        Carrboro, NC + Everywhere
+        <!-- - anywhere on the globe in 24 hours or less.* -->
+      </p>
+    </div>
+    <div class="pos-abs bottom-s left-0 right-0">
+      <!-- <small>*Additional fees may apply.</small> -->
+      <small><a href="http://morf.studio/"> ©MORF 2016 </a></small>
+    </div>
+  </section>
+
+  <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
+  <script type="text/javascript" src="slick/slick.min.js"></script>
+
+  <script type="text/javascript">
+    $(document).ready(function(){
+      $('.work-carousel').slick({
+        pauseOnHover: true,
+        dots: true,
+        lazyLoad: 'ondemand',
+      });
+    });
+  </script>
+
+    </div>
+
+  </body>
+
+</html>

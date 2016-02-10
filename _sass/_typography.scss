@@ -1,0 +1,84 @@
+//Global Settings
+
+$measure-width:40em;
+$measure-width-narrow:22em;
+.measure{
+  max-width:$measure-width;
+}
+.measure-narrow{
+  max-width:$measure-width-narrow;
+}
+
+
+/**
+ * Basic styling
+ */
+body {
+    font-family: $base-font-family;
+    font-size: $base-font-size;
+    line-height: $base-line-height;
+    font-weight: 300;
+    color: $text-color;
+    background-color: $background-color;
+    -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+}
+
+/**
+ * Set `margin-bottom` to maintain vertical rhythm
+ */
+h1, h2, h3, h4, h5, h6,
+p, blockquote, pre,
+ul, ol, dl, figure, small,
+%vertical-rhythm {
+    margin-top:0;
+    margin-bottom: 0.75rem;
+}
+
+
+p {
+  line-height: 2rem;
+  max-width:$measure-width;
+  opacity:0.9;
+}
+
+.float-center{
+  margin-left:auto;
+  margin-right:auto;
+}
+
+strong{
+  font-weight:bold;
+}
+
+small{
+  font-size:0.875rem;
+  opacity:0.6;
+}
+
+
+mark{
+  //padding:$space1 0;
+  &:hover{
+    cursor:help;
+  }
+}
+
+//Text Decoration Classes
+.underline{}
+.bold{}
+.uppercase{
+  text-transform: uppercase;
+}
+
+// Text Alignment Classes
+.text-center{text-align:center;}
+.text-left  { text-align:left;}
+.text-right {text-align:right;}
+
+//Font Weight Classes
+.bold {}
+.light{}
+
+//Measure & Max-Width Classes
+.measure{ max-width: $measure-width;}

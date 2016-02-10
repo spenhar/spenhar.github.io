@@ -2,7 +2,7 @@
 // http://www.flickr.com/photos/puckey/3179779686/in/photostream/
 
 // Create a raster item:
-var raster = new Raster('img/SH_gelato-square.jpg');
+var raster = new Raster('img/gelato-title.jpg');
 var loaded = false;
 
 raster.on('load', function() {

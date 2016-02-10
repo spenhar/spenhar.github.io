@@ -1,0 +1,18 @@
+// GSS styles
+
+#title[top-left] == 25;
+#subtitle[top-left] == #title[top-left]+50;
+#subtitle[left] == 50;
+
+#footer[left] == 25;
+#footer[top] == ::window[bottom] - 50;
+
+// #title {
+//   border: 1px solid red;
+// }
+
+// #footer {
+//   border: 1px solid white;
+// }
+
+// footer[bottom] == 1000;

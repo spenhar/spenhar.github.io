@@ -1,82 +1,153 @@
- <!DOCTYPE html>
-<html lang="en">
-<head>
-
-  <!-- Basic Page Needs
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-  <meta charset="utf-8">
-  <title>Spencer Harrison</title>
-  <meta name="description" content="Personal site of designer Spencer Harrison">
-  <meta name="author" content="">
-
-  <!-- Mobile Specific Metas
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-
-  <!-- FONT
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-  <link href='http://fonts.googleapis.com/css?family=Raleway:400,300,600' rel='stylesheet' type='text/css'>
-
-  <script src="//use.typekit.net/ykf3igh.js"></script>
-  <script>try{Typekit.load();}catch(e){}</script>
-
-  <!-- CSS
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-  <link rel="stylesheet" href="css/normalize.css">
-  <link rel="stylesheet" href="css/skeleton.css">
-
-  <!-- GSS
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-  <script src="/bower_components/gss/dist/gss.js"></script>
-  <script type="text/javascript">
-    window.engine = new GSS(document);
-  </script>
-
-  <link rel="stylesheet" type="text/gss" href="gss/structure.gss"></link>
-
-  <!-- Load the Paper.js library -->
-  <script type="text/javascript" src="js/paper-full.js"></script>
-  <!-- Load external PaperScript and associate it with myCanvas -->
-  <script type="text/paperscript" src="js/raster.js" canvas="myCanvas"></script>
-
-  <!-- Favicon
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-  <link rel="icon" type="image/png" href="images/S_icon.jpg" />
-
-</head>
-<body>
+---
+layout: home
+---
   <canvas id="myCanvas" resize></canvas>
 
-  <!-- Primary Page Layout
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-  <div class="container">
-    <div class="header">
-        <h1 class="title">Spencer Harrison</h1>
+  <section id="brand" class="full-screen bg-gray dis-t pos-rel pad-all-l" role="masthead">
+    <div class="v-center">
+      <div class="measure float-center pad-b-xl">
+        <h1 class=""> Spencer Harrison </h1>
+        <p>
+          Born and raised in Salt Lake City, UT. I was always obsessing over inventing sounds and new devices.
+          Now I get to do that kidstuff as a grown-up. It's a christmas miracle.
+          I once got a reses pieces stuck in my nose.
+        </p>
+        <p>
+          That sucked.
+        </p>
+        <!-- <img src="img/studio/morf-logo15fps.gif" alt="Morf"> -->
+        <!-- <h2 class="pad-b-xl">Spencer Harrison</h2> -->
+       </div>
     </div>
-    <div class="nav">
-        <button href="">Work</button>
-        <button href="button">Play</button>
-        <button href="button">@Spenhar</button>
+  </section>
+
+  <section id="info" class="full-screen bg-white dis-t pos-rel pad-all-l">
+    <div class="v-center">
+      <div class="About float-center measure">
+        <h1 class=""> Other things </h1>
+        <p>
+          I may not have more to say.
+        </p>
+      </div>
+
     </div>
+  </section>
 
-<!--     <ul class="projects">
-      <li>used to <a target="_blank" href="http://www.theexperiment.io">Experiment</a></li>
-      <li>now on <a target="_blank" href="http://www.thegrid.io">The Grid</a></li>
-      <li>nights get <a target="_blank" href="http://www.mideaumusic.com">loud</a></li>
-    </ul> -->
+  <section id="work" class="bg-gray pos-rel pad-b-l">
 
-<!--     <div class="links">
-        <h5 class="shift">used to <a href="http://www.theexperiment.io">Experiment</a></h5>
-        <h5 class="shift">now on<a href="http://www.thegrid.io">The Grid</a></h5>
-        <h5 class="shift">nights get <a href="http://www.mideaumusic.com">loud.</a></h5>
-    </div>    -->
-  </div>
+      <!-- <div class="pad-all-m b-b-1sw">
+        <div class="work-carousel">
 
-<!-- <footer>
-  <h5>days are spent <a href="http://www.theexperiment.io">experimenting</a></h5>
-  <h5>some nights get <a href="http://www.mideaumusic.com">loud.</a></h5>
-</footer> -->
-<!-- End Document
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-</body>
-</html>
+          <div> <img data-lazy="img/work/wm/woolleylogo.jpg" alt="The Woolley Market Double Handle Saw Logo"> </div>
+          <div> <img data-lazy="img/work/wm/woolleygrid.jpg" alt="Clockwise from top left, window painting, coffee cups, a 1919 Model T farm truck, gift cards, painting cold beer on the exterior, and a fisherman environmental sign inspired by a 1920's skagit valley photo."> </div>
+          <div> <img data-lazy="img/work/wm/woolleyrear.jpg" alt="The Rear entrance to the Woolley Market, paint on brick."> </div>
+          <div> <img data-lazy="img/work/wm/woolleyneon.jpg" alt="The Woolley Market Logo in Neon mounted to a 40-inch saw blade salvaged from a local mill."> </div>
+          <div> <img data-lazy="img/work/wm/woolleycorner.jpg" alt="View of the market from Main and State Streets, in Sedro-Woolley Washington. Manufactured marquee sign and painted exterior signs."> </div>
+          <div> <img data-lazy="img/work/wm/woolleybutcher.jpg" alt="Butcher paper for the deli."> </div>
+          <div> <img data-lazy="img/work/wm/woolleymural.jpg" alt="Gateway to the North Cascades has long been the town motto for Sedro Woolley, so we painted it into a mural next to an arial photo showing the town and it's relationship to Mt. Baker."> </div>
+        </div>
+        <div class="info-box">
+          <p class="mar-all-0"> Woolley Market</p>
+          <span class="uppercase"> <small> Branding | Signage | Environmental Design | Packaging | Apparel | Special Items </small> </span>
+        </div>
+      </div> -->
+
+      <!-- <div class="pad-all-m b-b-1sw">
+        <div class="work-carousel">
+          <div> <img data-lazy="img/work/thrill/thrillderness.jpg" alt="Thrillderness logo set over the opening of a momentarily dry Yosemite Falls."> </div>
+          <div> <img data-lazy="img/work/thrill/thrillderness_4.jpg" alt="Clockwise from top left, Thrillderness Shaka Hand Logo with tagline Go Far and Shred Gnar, black and white hike photograph, Boy scout style handshake logo with text reading the handshake, standing atop clouds at Whistler summit, illustration of compasses, and soaking in hot springs. "> </div>
+          <div> <img data-lazy="img/work/thrill/thrillderness_5.jpg" alt="Mountain Bikers on ridge wearing Thrillderness apparel."> </div>
+          <div> <img data-lazy="img/work/thrill/thrillderness_3.jpg" alt="Screenshots of Thrillderness website presented in a large desktop-like browser and phone browser."> </div>
+        </div>
+        <div class="info-box">
+          <p class="mar-all-0"> Thrillderness</p>
+          <span class="uppercase"> <small> Branding | UX | UI | Web Development | Experiential Design | Apparel </small> </span>
+        </div>
+      </div> -->
+
+      <div class="pad-all-m b-b-1sw">
+        <div class="work-carousel">
+          <div> <img data-lazy="img/work/grid/mobileUIdesign.jpg" alt="An example of The Grid's User Interface on a mobile browser."> </div>
+          <!-- <div class="title-slide"><h2>The Grid</h2></div> -->
+          <div> <img data-lazy="img/work/grid/desktopUIdesign.jpg" alt="An example of The Grid's User Interface on a desktop browser."> </div>
+          <!-- <div> <img data-lazy="img/work/grid/ux-grid.jpg" alt=""> </div> -->
+          <div class="title-slide"><img data-lazy="img/work/grid/leigh-bw.jpg" alt="Two men critiquing User-Experience process post-it notes on a wall."> </div>
+        </div>
+        <div class="info-box">
+          <p class="mar-all-0"> The Grid</p>
+          <span class="uppercase"> <small> UX | UI | Visual Design | Prototyping </small> </span>
+        </div>
+      </div>
+
+      <!-- <div class="pad-all-m b-b-1sw">
+        <div class="work-carousel">
+          <div> <img data-lazy="img/work/bnb/bikebuild_1.jpg" alt=""> </div>
+          <div> <img data-lazy="img/work/bnb/bikebuild_2.jpg" alt=""> </div>
+          <div> <img data-lazy="img/work/bnb/bikebuild_3.jpg" alt=""> </div>
+          <div> <img data-lazy="img/work/bnb/bikebuild_4.jpg" alt=""> </div>
+        </div>
+        <div class="info-box">
+          <p class="mar-all-0"> Bike &amp; Build</p>
+          <span class="uppercase"> <small> Apparel | UX | UI | Visual Design | Data Visualization </small> </span>
+        </div>
+      </div> -->
+
+  </section>
+  <section id="skills" class="full-screen bg-gray dis-t pos-rel pad-all-l">
+    <!-- <h1>Skill Graph</h1> -->
+    <div class="v-center cf">
+    <!-- <h1>Skill Graph</h1> -->
+      <div class="float-center measure">
+        <h1> Skills </h1>
+        <ul id="skillsList" class="list-reset pad-t-s">
+          <li> Strategy</li>
+          <li> Branding</li>
+          <li> User Experience</li>
+          <li> Visual Design</li>
+          <li> Web &amp; App Design</li>
+          <li> Front &amp; Back End Development</li>
+          <li> Prototyping</li>
+          <li> Installations &amp; Environments</li>
+          <li> Experiential Design</li>
+          <li> Product Design </li>
+          <li> Big Dreaming</li>
+          <li> Weird Thinking</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" class="full-screen  dis-t pos-rel text-center pad-all-l bg-red">
+    <div class="v-center">
+      <h3> Don't lose touch. </h3>
+      <p class="float-center">
+        <a class="button dis-b s-dis-ib mar-b-s" href="mailto:yo@morf.studio?subject=I%20Was%20Stalking%20Your%20Site&body=I'm dying to know...">spencerjharrison@gmail.com</a>
+        <a class="button dis-b s-dis-ib mar-b-s" href="tel:19195379227"> (1)801.706.8265 </a>
+      </p>
+
+      <div>
+        <svg class="icon"><use xlink:href="#map-marker"></use></svg>
+      </div>
+      <p class="float-center">
+        Carrboro, NC + Everywhere
+        <!-- - anywhere on the globe in 24 hours or less.* -->
+      </p>
+    </div>
+    <div class="pos-abs bottom-s left-0 right-0">
+      <!-- <small>*Additional fees may apply.</small> -->
+      <small><a href="http://morf.studio/"> ©MORF 2016 </a></small>
+    </div>
+  </section>
+
+  <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
+  <script type="text/javascript" src="slick/slick.min.js"></script>
+
+  <script type="text/javascript">
+    $(document).ready(function(){
+      $('.work-carousel').slick({
+        pauseOnHover: true,
+        dots: true,
+        lazyLoad: 'ondemand',
+      });
+    });
+  </script>
