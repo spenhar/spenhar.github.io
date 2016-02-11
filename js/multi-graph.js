@@ -1,3 +1,27 @@
+// // ---------------------------------
+// // Suuposedly the way to make responsive
+// var margin = {top: 10, right: 10, bottom: 10, left: 10}
+//   , width = parseInt(d3.select('#multi-graph').style('width'))
+//   , width = width - margin.left - margin.right
+//   , graphRatio = .5
+//   , height = width * graphRatio;
+//
+// // scales and axes
+// var x = d3.scale.linear()
+//     .range([0, width])
+//     .domain([0, .4]); // hard-coding this because I know the data
+//
+// // ordinal scales are easier for uniform bar heights
+// // I'll set domain and rangeBands after data loads
+// var y = d3.scale.ordinal();
+//
+// var xAxis = d3.svg.axis()
+//     .scale(x)
+//     .tickFormat(percent);
+
+// ---------------------------------
+
+
 // Set the dimensions of the canvas / graph
 var margin = {top: 30, right: 20, bottom: 70, left: 50},
     width = 600 - margin.left - margin.right,
