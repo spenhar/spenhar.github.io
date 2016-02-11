@@ -1893,7 +1893,8 @@ dl {
 
 .slick-next {
   position: absolute;
-  margin-top: 2rem;
+  margin-top: -2rem;
+  margin-right: 1rem;
   z-index: 5;
   display: block;
   height: 2rem;
