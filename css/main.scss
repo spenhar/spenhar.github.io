@@ -67,12 +67,13 @@
     right: 0;
     @include breakpoint(m) {
       border-top: 8rem solid $gray;
-    };
-  }
-  //color:$white;
+    }
+  color:$white;
   /*z-index: 2;*/
-  //font-family: "Helvetica Neue", Helvetica, sans-serif !important;
+  font-family: "Helvetica Neue", Helvetica, sans-serif !important;
 }
+}
+
 #map-marker {
   width: 60px;
   fill: white;
@@ -83,6 +84,7 @@
   fill: white;
   padding: 20px;
 }
+
 #skillsList{
   @include breakpoint(m) {
     -webkit-column-count:2;
@@ -154,6 +156,9 @@
 }
 
 #multi-graph {
+  display: block;
+  margin: 2rem;
+
   body { font: 12px Arial;}
 
   path {
@@ -174,5 +179,9 @@
     font-size: 16px;
     font-weight: bold;
     text-anchor: middle;
+  }
+
+  @media screen and (min-width: 600px) {
+    margin: 4rem 12rem;
   }
 }
