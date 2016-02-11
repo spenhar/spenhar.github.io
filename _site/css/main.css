@@ -2098,3 +2098,7 @@ dl {
   @media screen and (min-width: 600px) {
     #multi-graph {
       margin: 4rem 12rem; } }
+
+.caption {
+  text-align: center;
+  font-size: .6rem; }
