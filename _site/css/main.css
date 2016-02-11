@@ -2047,7 +2047,7 @@ dl {
     -o-column-count: 2; } }
 
 .info-box {
-  padding-top: 1rem; }
+  padding-top: 0.5rem; }
   .info-box h2 {
     padding-top: .2rem; }
 
@@ -2101,4 +2101,4 @@ dl {
 
 .caption {
   text-align: center;
-  font-size: .6rem; }
+  font-size: .8rem; }
