@@ -1,6 +1,6 @@
 {
-  "name": "tachyons",
-  "version": "4.0.0-beta.7",
+  "name": "spenhar.github.io",
+  "version": "0.0.1",
   "description": "Functional CSS for humans",
   "author": "mrmrs",
   "style": "css/tachyons.css",
@@ -8,7 +8,10 @@
     "css",
     "src"
   ],
-  "repository": "tachyons-css/tachyons",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tachyons-css/tachyons.git"
+  },
   "keywords": [
     "css",
     "sass",
@@ -17,8 +20,12 @@
   ],
   "license": "MIT",
   "devDependencies": {
+    "browser-sync": "^2.14.0",
     "copy-files": "^0.1.0",
+    "gulp": "^3.9.1",
+    "gulp-shell": "^0.5.2",
     "immutable-css-cli": "^1.1.1",
+    "lodash": "^4.14.1",
     "normalize.css": "^3.0.3",
     "tachyons-background-size": "^3.0.2",
     "tachyons-border-colors": "^4.0.4",
@@ -67,26 +74,11 @@
     "watch": "^0.17.1"
   },
   "contributors": [
-    {
-      "name": "adam morse",
-      "email": "hi@mrmrs.cc"
-    },
-    {
-      "name": "robert forloine",
-      "url": "http://www.sndsgn.com"
-    },
-    {
-      "name": "david potsiadlo",
-      "url": "http://www.davidpots.com/"
-    },
-    {
-      "name": "tyler benziger",
-      "url": "http://tybenz.com"
-    },
-    {
-      "name": "john otander",
-      "url": "http://johnotander.com"
-    }
+    "adam morse <hi@mrmrs.cc>",
+    "robert forloine (http://www.sndsgn.com)",
+    "david potsiadlo (http://www.davidpots.com/)",
+    "tyler benziger (http://tybenz.com)",
+    "john otander (http://johnotander.com)"
   ],
   "scripts": {
     "start": "npm run build:css && npm run build:minify",
@@ -96,5 +88,10 @@
     "build:minify": "tachyons src/tachyons.css -m > css/tachyons.min.css",
     "build:watch": "watch 'npm start' ./src/"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "bugs": {
+    "url": "https://github.com/tachyons-css/tachyons/issues"
+  },
+  "homepage": "https://github.com/tachyons-css/tachyons#readme",
+  "main": "build.js"
 }

@@ -1,0 +1,45 @@
+
+ul {
+  //padding-bottom: 2rem;
+}
+li {
+  padding: $space-xs;
+}
+
+/**
+ * Lists
+ */
+ul, ol, dl {
+    padding-left: $space-m;
+    margin:0 auto $spacing-unit;
+}
+
+li {
+    > ul,
+    > ol {
+         margin-bottom: 0;
+    }
+}
+.list-reset {
+    margin-left:0;
+    padding-left: 0;
+    list-style: none;
+    li{
+      padding-top:$space-xs;
+      padding-bottom:$space-xs;
+      padding:$space-xs 0 $space-xs;
+    }
+}
+
+dl{
+  list-style:square;
+  dt{
+    font-weight:bold;
+    padding: $space-xs;
+  }
+  dd{
+    padding: $space-xs;
+    margin:0;
+  }
+  //  padding-bottom: 2rem;
+}

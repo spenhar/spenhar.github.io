@@ -1,18 +1,28 @@
 ---
 layout: post
-title:  "The Grid: How I helped robots build/not-build your website."
+title:  "The Grid"
 date:   2016-05-04 06:48:46
 categories: work
 permalink: /the-grid
 ---
 
-## or How I helped robots build/not-build your website.
+## How I helped robots build your website.
+
+The Grid Promise:
+
+"This is not another do-it-yourself website builder. The Grid harnesses the power of artificial intelligence to take everything you throw at it - videos, images, text, urls and more - and automatically shape them into a custom website unique to you. As your needs grow, it evolves with you, effortlessly adapting to your needs. Want to add e-commerce? Social feeds? A different layout? The Grid just takes care of it. This is not a website builder. This is your personal AI web developer. Its first masterpiece is the website you're looking at right now. Its next one could be yours."
+
+That's a big promise.
+
+My Role & What I learned
+
 
 
 ### What was The Grid
-- Moving from being a new designer in a prototyping shop to being a designer at a start-up with a product was a big step for us.
-- New Jargon:
-  - If CSS preprocessors were complicated 3 months ago, then I'm thrown into the world of Cassowary Constraint Solvers.
+Moving from being a new designer in a prototyping shop to being a designer at a start-up with a product was a big step for us.
+
+New job, new jargon.
+If CSS preprocessors were complicated 3 months ago, then I'm thrown into the world of Cassowary Constraint Solvers.
 
 ### What Problem were we Solving?
 - All the best designers ask this question, so I'm just copying them.

@@ -10,3 +10,6 @@ github_username:  spenhar
 
 # Build settings
 markdown: kramdown
+
+#Exclude files
+exclude: [node_modules, gulpfile.js]

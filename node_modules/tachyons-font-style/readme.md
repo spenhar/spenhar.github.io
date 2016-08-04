@@ -1,4 +1,4 @@
-# tachyons-font-style 2.2.2
+# tachyons-font-style 3.0.2
 
 Performance based css module.
 

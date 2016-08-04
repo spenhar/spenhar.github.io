@@ -4,17 +4,15 @@
   {% include head.html %}
 
   <body>
+    <div  class="pad-l bg-gray">
+      {% include header.html %}
 
-    {% include header.html %}
-
-    <div class="">
+      <div class="container">
         {{ content }}
+      </div>
+
+      {% include footer.html %}
     </div>
-    
-    {% include timeline.html %}
-
-    {% include footer.html %}
-
   </body>
 
 </html>

@@ -2,7 +2,7 @@ var allMyFriends = {};
 var r = 260; // radius of circle
 
 function setup() {
-  var canvas = createCanvas(displayWidth, displayHeight);
+  var canvas = createCanvas(1200, 400);
   frameRate(8);
   // line(0, 0, 1280, 400);
   // loadJSON("data.json", setupFriends);
