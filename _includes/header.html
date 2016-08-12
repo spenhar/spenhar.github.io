@@ -1,20 +1,20 @@
-<header class="site-header">
+<header class="bg-gray cf pad-m">
+  <div class="wrapper cf">
+    <!-- <a class="site-title white" href="{{ site.baseurl }}/">{{ site.title }}</a> -->
+    <div class="col col-12 m-col-8 pad-m">
+      <h3 class="yellow"><a class="" href="{{ site.baseurl }}/">{{ site.title }}</a>/{{ page.title }}</h3>
+    </div>
 
-  <div class="wrapper">
-
-    <a class="site-title white" href="{{ site.baseurl }}/">{{ site.title }}</a>
-
-    <nav class="site-nav">
-
-      <div class="trigger">
+    <nav class="text-right col col-12 m-col-4 pad-m">
+      <div class="">
         {% for page in site.pages %}
           {% if page.title %}
-          <a class="page-link" href="{{ page.url | prepend: site.baseurl }}">{{ page.title }}</a>
+          <a class="white mar-r-s" href="{{ page.url | prepend: site.baseurl }}">{{ page.title }}</a>
           {% endif %}
         {% endfor %}
+        <a class="white mar-r-s" href="https://twitter.com/{{ site.twitter_username }}">twitter</a>
+        <a class="white mar-r-s" href="https://github.com/{{ site.github_username }}">github</a>
       </div>
     </nav>
-
   </div>
-
 </header>

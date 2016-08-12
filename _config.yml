@@ -1,5 +1,5 @@
 # Site settings
-title: Spencer Harrison
+title: spenhar
 email: hello@spenhar.com
 description: > # this means to ignore newlines until "baseurl:"
   Personal portfolio and writings of Spencer Harrison (@spenhar)
@@ -13,3 +13,9 @@ markdown: kramdown
 
 #Exclude files
 exclude: [node_modules, gulpfile.js]
+
+collections:
+  _albums:
+  _works:
+  output: true
+  permalink: /portfolio/:path/

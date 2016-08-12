@@ -1,0 +1,25 @@
+---
+layout: default
+title: writing
+permalink: /writing/
+---
+
+<div class="pad-y-xl">
+
+  <ul class="post-list measure float-center">
+    {% for post in site.posts %}
+      {% unless post.categories contains 'portfolio' %}
+
+      <li class="mar-b-l">
+        <h2>
+          <a class="post-link" href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
+        </h2>
+        <span class="post-meta">{{ post.date | date: "%b %-d, %Y" }}</span>
+        <p>{{ post.excerpt }}</p>
+      </li>
+      {% endunless %}
+    {% endfor %}
+
+  </ul>
+
+</div>

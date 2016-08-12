@@ -1,0 +1,13 @@
+---
+layout: default
+title: portfolio
+permalink: /portfolio/
+---
+<div class="cf">
+    {% for post in site.categories.portfolio %}
+      <a class="col col-12 m-col-6 pad-s border-box" href="{{ post.url }}">
+        <img src="{{ post.image }}" />
+        <h4>{{ post.title }}</h4>
+      </a>
+    {% endfor %}
+</div>

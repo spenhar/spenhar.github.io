@@ -1,10 +1,9 @@
 ---
 layout: post
-title:  "Welcome to Jekyll!"
+title:  "Test Post about something interesting"
 date:   2016-05-04 06:48:46
 categories: jekyll update
 ---
-#Header to Test You With
 
 You’ll find this post in your `_posts` directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run `jekyll serve --watch`, which launches a web server and auto-regenerates your site when a file is updated.
 
