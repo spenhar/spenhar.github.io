@@ -9,12 +9,12 @@ $gray: #F6F6F6;
 $blk: #1F1A17;
 
 $color-list: (
-red:    #F44336,
-orange:  #FA6900,
-blue:    #67C9bb,
-yellow:  #FF951B,
-offwhite: #E3D3C4,
-gray:  #F6F6F6
+"red"    #F44336,
+"orange"  #FA6900,
+"blue"    #67C9bb,
+"yellow"  #FF951B,
+"offwhite" #E3D3C4,
+"gray"  #F6F6F6
 );
 
 
@@ -29,6 +29,7 @@ gray:  #F6F6F6
 
   .border-#{nth($value, 1)} {
     border-color: nth($value, 2);
+    border-style: solid;
   }
 }
 
