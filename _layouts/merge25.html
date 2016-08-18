@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  {% include head.html %}
+  <body>
+    {% include header.html %}
+    <main id="js-gallery" role="main" class="gallery">
+      <section class="gallery__body">
+        <div id="js-poster" class="main__gallery-poster poster">
+          <div class="poster__content">
+            {{ content }}
+          </div>
+        </div>
+      </section>
+    </main>
+
+    {% include footer-abs.html %}
+
+  </body>
+
+</html>

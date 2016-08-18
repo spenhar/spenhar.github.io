@@ -1,0 +1,59 @@
+#layer2 {
+	animation: hover 4s infinite linear;
+	&:hover {
+		cursor: pointer;
+	}
+}
+
+#layer3 {
+	animation: hover 6s infinite linear;
+	&:hover {
+		cursor: pointer;
+	}
+}
+
+#layer4 {
+	animation: hover 7s infinite linear;
+	&:hover {
+		cursor: pointer;
+	}
+}
+
+#layer5 {
+	animation: hover 8s infinite linear;
+	&:hover {
+		cursor: pointer;
+	}
+}
+
+#layer6 {
+	animation: hover 9s infinite linear;
+	&:hover {
+		cursor: pointer;
+	}
+}
+
+#layer7 {
+	animation: hover 9s infinite linear;
+	&:hover {
+		cursor: pointer;
+	}
+}
+
+#layer8 {
+	animation: hover 11s infinite linear;
+	&:hover {
+		cursor: pointer;
+	}
+}
+
+@keyframes hover {
+	from, to {
+		transition-timing-function: ease-in-out;
+		transform: translate3d(0,0,0);
+	}
+	50% {
+		transition-timing-function: ease-in-out;
+		transform: translate3d(.1%,.7%,0);
+	}
+}
