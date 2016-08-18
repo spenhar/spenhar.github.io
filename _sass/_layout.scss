@@ -98,12 +98,26 @@
 .max-width-xl {max-width: 96rem;}
 .max-width-xxl{max-width: 128rem;}
 
+.max-height-xs {max-height: 16rem;}
+.max-height-s  {max-height: 32rem;}
+.max-height-m  {max-height: 48rem;}
+.max-height-l  {max-height: 64rem;}
+.max-height-xl {max-height: 96rem;}
+.max-height-xxl{max-height: 128rem;}
+
+// Z-Index
+.z-10 {z-index:10;}
+// .z-neg-10 {z-index:-10;}
+
 //Floats
 
-.v-center{
+.v-center-cell{
   display: table-cell;
   vertical-align: middle;
-  //padding-bottom: 6rem;
+}
+
+.v-center{
+  vertical-align: middle;
 }
 
 .border {

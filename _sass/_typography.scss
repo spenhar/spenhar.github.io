@@ -80,7 +80,9 @@ mark{
 .text-right {text-align:right;}
 
 //Font Weight Classes
-.bold {}
+.bold {
+  font-weight: 600;
+}
 .light{}
 
 //Measure & Max-Width Classes
