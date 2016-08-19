@@ -1,3 +1,6 @@
+---
+# Not necessary
+---
 /**
  * Mixins
  */
@@ -46,19 +49,25 @@ $border-width: 4px;
 
 // Animations
 $timing: cubic-bezier(0.455,  0.030, 0.515, 0.955);
-$duration: 1s;
+$duration: 2s;
 
 
 /**
  * Animations
  */
-@keyframes hover {
+@keyframes tilt {
   0% {
-    transform: translateY(-30%);
+    transform: translateY(-1%);
+    -ms-transform: rotate(-.2deg); /* IE 9 */
+    -webkit-transform: rotate(-.2deg); /* Chrome, Safari, Opera */
+    transform: rotate(-.2deg);
   }
 
   100% {
     transform: translateY(30%);
+    -ms-transform: rotate(1deg); /* IE 9 */
+    -webkit-transform: rotate(1deg); /* Chrome, Safari, Opera */
+    transform: rotate(1deg);
   }
 }
 
@@ -156,8 +165,8 @@ h6 {
 
 .poster__content {
   position: relative;
-  width: 540px;
-  height: 540px;
+  width: 500px;
+  height: 700px;
   overflow: hidden;
 	padding: 2%;
   background-color: $primary-color;
@@ -166,12 +175,22 @@ h6 {
 }
 
 .poster__header {
-  @include pos(absolute, auto, auto, 24%, 2%);
+  @include pos(absolute, auto, auto, 6%, 12%);
 
+  dl {
+    margin: 0 auto .2rem;
+    padding: 0;
+
+  }
+  dt,
+  dd {
+    font-size: 8px;
+    padding: 0;
+  }
   h1,
   li {
     margin: 0;
-    font-size: 24px;
+    font-size: 18px;
     font-weight: 500;
     line-height: 1.1;
     letter-spacing: -0.02em;
@@ -179,7 +198,7 @@ h6 {
 }
 
 .poster__meta {
-  @include pos(absolute, auto, auto, 3%, 2%);
+  @include pos(absolute, auto, 12%, 6%, auto);
 
   h2,
   li,
@@ -202,80 +221,13 @@ h6 {
 }
 
 .circle {
-  position: absolute;
-  width: 100%;
-  height: 34.625%;
-  border-radius: 50%;
-
-  &--teal {
-    z-index: 2;
-    background-color: rgba(darken($teal, 6%), .8);
-  }
-
-  &--brown {
-    z-index: 1;
-    background-color: $brown;
-  }
+  top: 15%;
+  animation: hover $duration $timing alternate infinite;
+}
+#blue-circles {
+  animation: tilt $duration $timing alternate infinite;
 }
 
-.poster__body-row {
-  position: absolute;
-  width: 40%;
-  height: 100%;
-}
-
-.poster__body-row--1 {
-  left: 2%;
-
-  .circle {
-    top: 15%;
-    animation: hover $duration $timing alternate infinite;
-  }
-}
-
-.poster__body-row--2 {
-  left: 44%;
-
-  .circle {
-
-    &:nth-child(1) {
-      top: -15%;
-      animation: slide $duration $timing alternate infinite;
-    }
-
-    &:nth-child(2) {
-      top: 15%;
-      animation: slide $duration*1.5 $timing alternate infinite;
-    }
-
-    &:nth-child(3) {
-      top: 30%;
-      animation: slide $duration*2 $timing alternate infinite;
-    }
-
-    &:nth-child(4) {
-      top: 45%;
-      animation: slide $duration*2.5 $timing alternate infinite;
-    }
-
-    &:nth-child(5) {
-      top: 60%;
-      animation: slide $duration*3 $timing alternate infinite;
-    }
-
-    &:nth-child(6) {
-      top: 90%;
-      animation: slide $duration*3.5 $timing alternate infinite;
-    }
-
-  }
-}
-
-.poster__body-row--3 {
-  left: 86%;
-
-  .circle {
-    top: 60%;
-    animation: hover $duration $timing alternate infinite;
-  }
+.multiply path {
+  mix-blend-mode: multiply;
 }

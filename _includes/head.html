@@ -21,4 +21,16 @@
     <link rel="stylesheet" href="/css/timeline.css">
     <link rel="stylesheet" href="/css/deeper.css">
     <link rel="stylesheet" href="/css/stars.css">
+
+    {% if page.custom_css %}
+      {% for stylesheet in page.custom_css %}
+      <link rel="stylesheet" href="/css/{{ stylesheet }}.css" media="screen" type="text/css">
+      {% endfor %}
+    {% endif %}
+
+    {% if page.custom_js %}
+      {% for js_file in page.custom_js %}
+      <script src='/js/{{ js_file }}.js' type="text/javascript"></script>
+      {% endfor %}
+    {% endif %}
 </head>
