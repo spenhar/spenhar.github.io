@@ -5,7 +5,7 @@ desc:   Bring an object. Tell us about it. The End.
 date:   2016-10-14 19:00:00
 time:   7PM
 categories: event
-image: /img/events/wrench.gif
+image: /img/events/precious.gif
 permalink: /events/show-and-tell-2016
 rsvp: <a href="mailto:events@spenhar.com?Subject=R.S.V.P.%20for%20Show%20and%20Tell%202016&Body=Yohoo%21%0A%0AI%27ll%20be%20there%20with%20%5B%20X%20%5D%20guests%20and%20bells%20on.%20%0A%0Aor%0A%0AI%27m%20unable%20to%20make%20your%20object%20event%20and%20this%20deeply%20saddens%20me.%20Xoxo">r.s.v.p.</A>
 address: <a target="_blank" href="https://goo.gl/maps/PwbWEdaaQzt">Carrboro Cottage</a>
