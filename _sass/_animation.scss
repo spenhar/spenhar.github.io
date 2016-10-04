@@ -4,6 +4,9 @@
 @keyframes spin { 100% { -webkit-transform: rotate(90deg); transform:rotate(560deg); } }
 
 /*ANIMATION*/
+// Animations
+$timing: cubic-bezier(0.455,  0.030, 0.515, 0.955);
+$duration: 2s;
 
 .headerAnimation {
   /*border: 2px solid;*/
@@ -23,6 +26,32 @@
         -ms-animation: play 5s steps(10) infinite;
          -o-animation: play 5s steps(10) infinite;
             animation: play 5s steps(10) infinite;
+}
+
+@keyframes tilt {
+  0% {
+    transform: translateY(-1%);
+    -ms-transform: rotate(-.2deg); /* IE 9 */
+    -webkit-transform: rotate(-.2deg); /* Chrome, Safari, Opera */
+    transform: rotate(-.2deg);
+  }
+
+  100% {
+    transform: translateY(30%);
+    -ms-transform: rotate(1deg); /* IE 9 */
+    -webkit-transform: rotate(1deg); /* Chrome, Safari, Opera */
+    transform: rotate(1deg);
+  }
+}
+
+@keyframes slide {
+  0% {
+    transform: translateX(-12%);
+  }
+
+  100% {
+    transform: translateX(12%);
+  }
 }
 
 @-webkit-keyframes play {

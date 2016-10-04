@@ -1,3 +1,49 @@
-#vinyl-square {
-  
+#name-header {
+  letter-spacing: .2rem;
+}
+
+.musigner {
+  position: relative;
+}
+#musician {
+  color: #F01616;
+  mix-blend-mode: multiply;
+  opacity: 1;
+}
+#musigner-3 {
+  position: absolute;
+  color: #1797b0;
+  mix-blend-mode: multiply;
+  top: 0;
+  opacity: 1;
+  // left: 200px;
+  // animation: tilt $duration $timing alternate infinite;
+  // animation: slide $duration*12 $timing alternate infinite;
+}
+
+hr {
+  box-sizing:border-box;
+  margin-top:16px;
+  margin-bottom:16px;
+  border:0;
+  border-bottom-width:1px;
+  border-bottom-style:solid;
+  border-bottom-color:rgba(0, 0, 0, .25);
+  border-width:1px;
+  border-color:currentcolor;
+  // margin-left:32px;
+  // margin-right:32px;
+}
+
+p {
+  font-weight: 300;
+}
+
+.post-content {
+  img {
+
+  }
+  p {
+    padding-bottom: 1.5rem;
+  }
 }
