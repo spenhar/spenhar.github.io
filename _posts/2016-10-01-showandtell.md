@@ -30,5 +30,3 @@ We'll provide a special snack. Bring drinks and/or your beautiful face.
 ##### RSVP
 Please {{ page.rsvp }} so we know how many to expect.
 {% endif %}
-
-XO - Spencer & Taylor
