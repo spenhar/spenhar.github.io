@@ -7,9 +7,9 @@ time:   7PM
 categories: event
 image: /img/events/precious.gif
 permalink: /events/show-and-tell-2016
-rsvp: <a href="mailto:events@spenhar.com?Subject=R.S.V.P.%20for%20Show%20and%20Tell%202016&Body=Yohoo%21%0A%0AI%27ll%20be%20there%20with%20%5B%20X%20%5D%20guests%20and%20bells%20on.%20%0A%0Aor%0A%0AI%27m%20unable%20to%20make%20your%20object%20event%20and%20this%20deeply%20saddens%20me.%20Xoxo">r.s.v.p.</A>
-address: <a target="_blank" href="https://goo.gl/maps/PwbWEdaaQzt">little cottage in Carrboro</a>
-add_to_cal: <small><a target="_blank" href="https://calendar.google.com/calendar/event?action=TEMPLATE&tmeid=XzhjcWpnZTlqOGtzMzRiOW04cDFqNGI5azZjcDNlYmExNm9wazRiYTM4OHMzZ2UxbjhjbzNjZWEzOGMgYXNvaDUzOGhibzJ2am9xMG9lYTY2dGVlbzRAZw&tmsrc=asoh538hbo2vjoq0oea66teeo4%40group.calendar.google.com">Add to calendar</a></small>
+rsvp: <a id="red-link" href="mailto:events@spenhar.com?Subject=R.S.V.P.%20for%20Show%20and%20Tell%202016&Body=Yohoo%21%0A%0AI%27ll%20be%20there%20with%20%5B%20X%20%5D%20guests%20and%20bells%20on.%20%0A%0Aor%0A%0AI%27m%20unable%20to%20make%20your%20object%20event%20and%20this%20deeply%20saddens%20me.%20Xoxo">r.s.v.p.</A>
+address: <a id="red-link" target="_blank" href="https://goo.gl/maps/PwbWEdaaQzt">little cottage</a>
+add_to_cal: <a id="red-link" target="_blank" href="https://calendar.google.com/calendar/event?action=TEMPLATE&tmeid=XzhjcWpnZTlqOGtzMzRiOW04cDFqNGI5azZjcDNlYmExNm9wazRiYTM4OHMzZ2UxbjhjbzNjZWEzOGMgYXNvaDUzOGhibzJ2am9xMG9lYTY2dGVlbzRAZw&tmsrc=asoh538hbo2vjoq0oea66teeo4%40group.calendar.google.com">Add to calendar</a>
 ---
 
 ##### WHAT
@@ -20,13 +20,14 @@ Friday {{ page.date | date: "%b %-d, %Y" }}{% if page.time %} • {{ page.time }
 
 {% if page.address %}
 ##### WHERE
-At the {{ page.address }}.
+At the {{ page.address }} in Carrboro.
 {% endif %}
 
 ##### REFRESHMENTS
 We'll provide a special snack. Bring drinks and/or your beautiful face.
 
-{% if page.rsvp %}
+
 ##### RSVP
+{% if page.rsvp %}
 Please {{ page.rsvp }} so we know how many to expect.
 {% endif %}
