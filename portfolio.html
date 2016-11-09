@@ -3,11 +3,42 @@ layout: default
 title: portfolio
 permalink: /portfolio/
 ---
-<div class="max-width-xl float-center cf pad-s">
+<!-- <div class="max-width-xl float-center cf pad-s">
     {% for post in site.categories.portfolio %}
       <a class="col col-12 l-col-4 m-col-6 pad-s border-box" href="{{ post.url }}">
         <img src="{{ post.image }}" />
         <h4>{{ post.title }}</h4>
       </a>
     {% endfor %}
-</div>
+</div> -->
+
+<section id="music" class="pad-b-l pad-y-xl">
+  <div class="pad-x-l">
+    <h5>Music</h5>
+    <hr class="Divider">
+  </div>
+  <div class="max-width-xl float-center cf">
+      {% for post in site.categories.music %}
+        <a class="col col-12 l-col-4 m-col-6 pad-l border-box" href="{{ post.url }}">
+          <img src="{{ post.image }}" class="pad-b-m"/>
+          <h3>{{ post.title }}</h3>
+          <p>{{ post.desc }}</p>
+        </a>
+      {% endfor %}
+  </div>
+</section>
+<section id="design">
+  <div class="pad-x-l">
+    <h5>Design</h5>
+    <hr class="Divider">
+  </div>
+  <div class="max-width-xl float-center cf">
+      {% for post in site.categories.design %}
+        <a class="col col-12 l-col-4 m-col-6 pad-l border-box" href="{{ post.url }}">
+          <img src="{{ post.image }}" class="pad-b-m"/>
+          <h3>{{ post.title }}</h3>
+          <p>{{ post.desc }}</p>
+        </a>
+      {% endfor %}
+  </div>
+</section>
