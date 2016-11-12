@@ -24,7 +24,7 @@ At the {{ page.address }} in Carrboro. {% endif %}
 Our place is 503C Oak Ave, which is the little grey cottage with a red door to the right and behind 503 Oak Ave (the house on the linked map). Parking is a bit confusing if you've never been before but we'll help direct. Carpool or unicycle if possible.
 
 ##### REFRESHMENTS
-We'll provide various flavors of popped corn and seasonal cider. Required: bring your heart and that face we love so much. Optional: bring drinks and/or something snacky to share.
+We'll provide various flavors of popped corn and seasonal cider. Required: bring your heart and that face we love so much. Optional: bring drinks and/or something snacky to share and/or firewood for the firepit. 
 
 XOXO
 
