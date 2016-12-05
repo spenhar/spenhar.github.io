@@ -1,0 +1,155 @@
+---
+layout: default
+title: audio
+permalink: /audio/
+---
+
+<head>
+  <script language="javascript" type="text/javascript" src="../p5/p5.js"></script>
+
+  <script language="javascript" type="text/javascript" src="../p5/addons/p5.dom.js"></script>
+
+  <script language="javascript" type="text/javascript" src="../p5/p5.sound.js"></script>
+<!--
+  <script language="javascript" type="text/javascript" src="sketch.js"></script> -->
+
+</head>
+
+<!-- /**
+ *  DEMO
+ *  - change playback rate of a soundfile based on mouseX position
+ *  - a negative playback rate will reverse the soundfile, but won't
+ *  preserve current location of the playhead.
+ */ -->
+
+
+<!-- <script type="text/javascript">
+
+var soundFile;
+var p;
+
+function preload() {
+  soundFormats('mp3', 'ogg');
+  soundFile = loadSound('/files/enjoymyvoice');
+}
+
+function setup() {
+  soundFile.loop(0);
+  p = createP();
+}
+
+function draw() {
+  background(1200);
+
+  // map playback rate of a sound file to mouseX position
+  var newRate = (map(mouseX, 0, 1200, -1, 1));
+  // newRate = constrain(newRate, 0.1, 1.5);
+  soundFile.rate(newRate);
+  p.html( 'Playback Rate: ' + newRate.toFixed(3) )
+
+  // Set the volume to a range between 0 and 1.0
+  var volume = map(mouseX, 0, width, 0, 1);
+  volume = constrain(volume, 0, .7);
+  soundFile.amp(volume);
+
+  // Set the rate to a range between 0.1 and 4
+  // Changing the rate alters the pitch
+  var speed = map(mouseY, 0.1, height, 0, 2);
+  speed = constrain(speed, 0.01, 3);
+  soundFile.rate(speed);
+
+  // Draw some circles to show what is going on
+  stroke(0);
+  fill(51, 100);
+  ellipse(mouseX, 100, 48, 48);
+  stroke(0);
+  fill(51, 100);
+  ellipse(100, mouseY, 48, 48);
+}
+
+function keyPressed() {
+  var key = keyCode;
+  // Spacebar: pause
+  if (key == 32) {
+    soundFile.pause();
+  }
+}
+
+</script> -->
+
+<script type="text/javascript">
+
+var voice, beat, delay;
+var rSlider, gSlider, bSlider;
+
+function preload() {
+  soundFormats('mp3', 'ogg');
+  voice = loadSound('/files/enjoymyvoice');
+  beat = loadSound('/files/enjoymybeat');
+}
+
+function setup() {
+  createCanvas(710, 400);
+  textSize(15);
+  noStroke();
+
+  // Loop the sound forever
+  // (well, at least until stop() is called)
+  voice.loop();
+  beat.loop();
+
+  delay = new p5.Delay();
+  delay.process(voice, .5, .2, 2300);
+  delay.setType('pingPong'); // a stereo effect
+
+  // create sliders
+  speedSlider = createSlider(0, 4, 0);
+  speedSlider.position(20, 20);
+  gSlider = createSlider(0, 255, 0);
+  gSlider.position(20, 50);
+  bSlider = createSlider(0, 255, 255);
+  bSlider.position(20, 80);
+}
+
+function draw() {
+  background(200);
+
+  // Set the volume to a range between 0 and 1.0
+  var volume = map(mouseX, 0, width, 0, 1);
+  volume = constrain(volume, 0, .7);
+  beat.amp(volume);
+
+  // Set the rate to a range between 0.1 and 4
+  // Changing the rate alters the pitch
+  var speed = speedSlider.value();
+  var g = gSlider.value();
+  var b = bSlider.value();
+  // var speed = map(mouseY, 0.1, height, 0, 2);
+  speed = constrain(speed, 0.01, 4);
+  voice.rate(speed);
+
+  // Draw some circles to show what is going on
+  stroke(0);
+  fill(51, 100);
+  ellipse(mouseX, 100, 48, 48);
+  stroke(0);
+  fill(51, 100);
+  ellipse(100, mouseY, 48, 48);
+
+
+  // background(r, g, b);
+  // text("red", 165, 35);
+  // text("green", 165, 65);
+  // text("blue", 165, 95);
+}
+
+function keyPressed() {
+  var key = keyCode;
+  // Spacebar: pause
+  if (key == 32) {
+    beat.pause();
+  }
+}
+
+
+</script>
