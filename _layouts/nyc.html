@@ -3,14 +3,14 @@
 
   {% include head.html %}
 
-  <body>
+  <body class="">
 
-    <div class="post navy">
+    <div class="post">
 
       <header class="post-header pad-t-xl pad-b-l pad-x-m measure float-center">
         {{ page.date | date: "%b %-d, %Y" }}
         <img src="/img/nyc/{{ page.day }}.jpg" />
-        <h1>DAY {{ page.day }}</h1>
+        <h1 class="cream">DAY {{ page.day }}</h1>
         <h2 class="post-title">{{ page.title }}</h2>
       </header>
 
