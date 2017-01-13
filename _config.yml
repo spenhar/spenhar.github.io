@@ -8,6 +8,7 @@ url: "http://spenhar.com" # the base hostname & protocol for your site
 twitter_username: spenhar
 instagram_username: spenhar
 github_username:  spenhar
+soundcloud_username: spenhar
 sass:
   sass_dir: _sass
   style: compressed

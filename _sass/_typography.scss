@@ -106,3 +106,7 @@ code, .code { font-family: Consolas, monaco, monospace; }
 .calisto { font-family: "Calisto MT", serif; }
 .garamond { font-family: garamond, serif; }
 .baskerville { font-family: garamond, serif; }
+
+.tracked {
+  letter-spacing: $space-xs;
+}

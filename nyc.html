@@ -1,0 +1,22 @@
+---
+layout: default
+title: nyc
+permalink: /nyc/
+desc: daily entries from my time in the city
+---
+<div class="pad-y-xl">
+  <ul class="post-list measure float-center">
+    {% for post in site.categories.nyc %}
+      <li class="mar-b-l">
+        <h2>
+          <a class="post-link link" href="{{ post.url | prepend: site.baseurl }}">{{ post.day }} | {{ post.title }}</a>
+        </h2>
+        <!-- <span class="post-meta">{{ post.date | date: "%-m.%-d.%Y" }}</span> -->
+        <div class="serif">
+          <p>{{ post.excerpt }}</p>
+        </div>
+        <a class="uppercase h6" href="{{ post.url | prepend: site.baseurl }}">Read More</a>
+      </li>
+    {% endfor %}
+  </ul>
+</div>

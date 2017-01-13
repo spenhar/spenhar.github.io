@@ -16,6 +16,10 @@ $border-width: .25rem;
 .border-bottom{
   border-bottom:$border-width solid;
 }
+.border-bottom-s{
+  border-bottom:$border-width/2 solid;
+  padding-bottom:$space-s;
+}
 
 .shadow{
   box-shadow:0 2px 10px 0px rgba(0,0,0, .08);

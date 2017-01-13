@@ -1,3 +1,9 @@
+body {
+  background: url(/img/lightning-720.gif) no-repeat center center fixed;
+  background-size: cover;
+  background-color: black;
+}
+
 img.bg {
   /* Set rules to fill background */
   min-height: 100%;
@@ -74,4 +80,8 @@ p {
   color: $red;
   // text-decoration: underline;
   border-bottom: 2px solid $red;
+}
+
+#lightning {
+  
 }

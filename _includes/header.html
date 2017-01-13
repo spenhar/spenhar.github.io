@@ -1,14 +1,19 @@
-<header class="bg-gray cf pad-m">
-  <div class="wrapper cf">
+<header class="">
+  <div class="">
     <!-- <a class="site-title white" href="{{ site.baseurl }}/">{{ site.title }}</a> -->
-    <div class="col col-12 s-col-6 pad-m">
-      <div class="red"><a class="navy" href="{{ site.baseurl }}/"><span class="navy">{{ site.title }}</span></a>/{{ page.title }}</div>
+    <div class="pad-m float-left">
+      <div class="red">
+        <a class="" href="{{ site.baseurl }}/"><span class="cream">{{ site.title }}</span></a> {% if page.title %}/ {{ page.title }}{% endif %}
+      </div>
     </div>
-
-    <nav class="navy text-right col col-12 s-col-6 pad-m">
-      <div class="">
-        <!-- <a class="white mar-r-s" href="https://spenhar.com/portfolio" target="_blank">portfolio</a> -->
-        <!-- <a class="white mar-r-s" href="https://twitter.com/{{ site.twitter_username }}" target="_blank">twitter</a> -->
+    <nav class="pad-m float-right">
+      <div class="uppercase h5">
+          <a class="mar-r-s" href="mailto:{{ site.email }}">✉️️</a>
+          <a class="white mar-r-s" href="https://spenhar.com/portfolio" target="_blank">📁</a>
+          <!-- <a class="white mar-r-s" href="https://twitter.com/{{ site.twitter_username }}" target="_blank">🐦</a> -->
+          <a class="white mar-r-s" href="https://instagram.com/{{ site.instagram_username }}" target="_blank">📷</a>
+          <!-- <a class="white mar-r-s" href="https://github.com/{{ site.github_username }}" target="_blank">🖥️</a> -->
+          <a class="white mar-r-s" href="https://soundcloud.com/{{ site.soundcloud_username }}" target="_blank">🎹️</a>
       </div>
     </nav>
   </div>
