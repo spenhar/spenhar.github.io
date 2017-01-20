@@ -20,6 +20,10 @@ $border-width: .25rem;
   border-bottom:$border-width/2 solid;
   padding-bottom:$space-s;
 }
+.border-bottom-green-s{
+  border-bottom:$border-width/2 solid $greenbeme;
+  padding-bottom:$space-xs;
+}
 
 .shadow{
   box-shadow:0 2px 10px 0px rgba(0,0,0, .08);

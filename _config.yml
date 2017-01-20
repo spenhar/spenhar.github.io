@@ -21,6 +21,5 @@ exclude: [node_modules, gulpfile.js]
 
 collections:
   _albums:
-  _works:
-  output: true
-  permalink: /portfolio/:path/
+  designs:
+    permalink: /designs/:path/

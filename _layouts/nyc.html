@@ -5,16 +5,16 @@
 
   <body class="">
 
-    <div class="post">
+    <div class="">
 
-      <header class="post-header pad-t-xl pad-b-l pad-x-m measure float-center">
-        {{ page.date | date: "%b %-d, %Y" }}
+      <header class="pad-t-xl pad-x-m measure float-center">
         <img src="/img/nyc/{{ page.day }}.jpg" />
-        <h1 class="cream">DAY {{ page.day }}</h1>
-        <h2 class="post-title">{{ page.title }}</h2>
+        <h6 class="uppercase pad-t-s">{{ page.date | date: "%m.%d.%Y" }}</h6>
+        <h1 class="">DAY {{ page.day }}</h1>
+        <!-- <h2 class="post-title">{{ page.title }}</h2> -->
       </header>
 
-      <article class="post-content measure float-center serif pad-b-xxl pad-x-m">
+      <article class="measure float-center serif pad-b-xxl pad-x-m">
         {{ content }}
         <div class="map">
 
