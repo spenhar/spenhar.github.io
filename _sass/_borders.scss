@@ -18,7 +18,7 @@ $border-width: .25rem;
 }
 .border-bottom-s{
   border-bottom:$border-width/2 solid;
-  padding-bottom:$space-s;
+  padding-bottom:$space-xs;
 }
 .border-bottom-green-s{
   border-bottom:$border-width/2 solid $greenbeme;
