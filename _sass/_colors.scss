@@ -3,7 +3,7 @@ $red: #F44336;
 $orange: #FA6900;
 $off-white: #E3d3C4;
 $blue: #67C9bb;
-$yellow: #FF951B;
+$yellow: #F9C22E;
 $charcoal: #252525;
 $gray: #F6F6F6;
 $blk: #1F1A17;
@@ -21,6 +21,7 @@ $color-list: (
 "offwhite" #E3D3C4,
 "cream" #fffff5,
 "gray"  #F6F6F6,
+"charcoal" #252525,
 "blk"  #1F1A17
 );
 
@@ -61,3 +62,10 @@ $color-list: (
 .w70{color:rgba(255,255,255,0.7);}
 .w80{color:rgba(255,255,255,0.8);}
 .w90{color:rgba(255,255,255,0.9);}
+
+.gradient {
+  background-image:
+    linear-gradient(
+      $yellow, $orange, $red
+    );
+}

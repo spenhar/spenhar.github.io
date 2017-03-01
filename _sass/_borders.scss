@@ -7,6 +7,10 @@ $border-width: .25rem;
 .border-top{
   border-top:$border-width solid;
 }
+.border-top-thin{
+  border-top:$border-width/4 solid rgba(0,0,0,0.2);
+  padding-top:$space-xs;
+}
 .border-left{
   border-left:$border-width solid;
 }
@@ -31,4 +35,8 @@ $border-width: .25rem;
 
 .circle{
   border-radius:50%;
+}
+
+.round-corners{
+  border-radius:.2rem;
 }

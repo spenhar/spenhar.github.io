@@ -1,0 +1,91 @@
+---
+layout: default
+---
+
+<div class="max-width-l float-center">
+  <nav>
+    {% include project-nav.html %}
+  </nav>
+  <div class="col pad-x-s pad-y-l">
+      <div class="pad-x-s pad-y-l">
+        <h1 class="heavy lead-s uppercase">{{ page.title }}</h1>
+      </div>
+
+      <div id="blob" class="pos-abs top-l right-0 z-1 max-width-m pad-xl">
+        <img src="{{ page.image }}" class="" alt="">
+      </div>
+
+      <div class="col col-12">
+        <div id="post-meta" class="col col-10 s-col-8 m-col-4 pad-x-s border-box">
+
+          {% if page.client %}
+          <div class="border-top-thin col col-12">
+            <h6 class="col col-3"><span class="b30 uppercase">Who</span></h6><h6 class="col col-9"><a href="{{ page.extlink }}">{{ page.client }}</a></h6>
+          </div>
+          {% endif %}
+
+          {% if page.role %}
+          <div class="border-top-thin col col-12">
+            <h6 class="col col-3"><span class="b30 uppercase">What</span></h6><h6 class="col col-9">{{ page.role}}</h6>
+          </div>
+          {% endif %}
+
+          {% if page.year %}
+          <div class="border-top-thin col col-12">
+            <h6 class="col col-3"><span class="b30 uppercase">When</span></h6><h6 class="col col-9">{{ page.year }}</h6>
+          </div>
+          {% endif %}
+
+          {% if page.year %}
+          <div class="border-top-thin col col-12">
+            <h6 class="col col-3"><span class="b30 uppercase">Where</span></h6><h6 class="col col-9">{{ page.location }}</h6>
+          </div>
+          {% endif %}
+
+          {% if page.collaborators %}
+          <div class="border-top-thin col col-12">
+            <h6 class="col col-3"><span class="b30 uppercase">Team</span></h6>
+            <h6 class="col col-9">{% for collaborator in page.collaborators %}<a href="{{ collaborator.link }}">{{ collaborator.name }}</a> {% endfor %}</h6>
+          </div>
+          {% endif %}
+
+        </div>
+      </div>
+
+      <!-- <div id="hero" class="pad-y-xl">
+        <img src="{{ page.hero }}" class="" alt="">
+      </div> -->
+
+
+
+  </div>
+</div>
+
+<article class="max-width-l float-center pad-x-m measure serif">
+  {{ content }}
+</article>
+
+<section class="max-width-l float-center pad-x-m measure">
+  <div class="photo-gallery">
+    {% for section in page.sections %}
+      <div class="pad-y-xl">
+        <h3>{{ section.head }}</h3>
+        <p class="serif">{{ section.desc }}</p>
+        {% for image in section.images %}
+        <div class="pad-y-m">
+            <img src="{{ section.images }}" class="round-corners" alt="{{ section.alt }}"/>
+        </div>
+
+        {% endfor %}
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+{% if page.extlink %}
+<section class="max-width-l float-center">
+  <a href="{{ page.extlink }}" class="pad-m">
+    <h4 class="float-center max-width-xs pad-x-l border bg-orange">Link to something --> </h4>
+  </a>
+</section>
+{% endif %}

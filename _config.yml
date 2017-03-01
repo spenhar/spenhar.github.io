@@ -23,3 +23,9 @@ collections:
   _albums:
   designs:
     permalink: /designs/:path/
+  projects:
+    output: true
+    permalink: /portfolio/:path/
+    defaults:
+      values:
+        layout: project

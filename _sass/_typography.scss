@@ -39,7 +39,6 @@ ul, ol, dl, figure, small,
     margin-bottom: 0.75rem;
 }
 
-
 p {
   //line-height: 2rem;
   max-width:$measure-width;
@@ -81,6 +80,9 @@ mark{
 .text-right {text-align:right;}
 
 //Font Weight Classes
+.heavy {
+  font-weight: 800;
+}
 .bold {
   font-weight: 600;
 }
@@ -89,7 +91,13 @@ mark{
 //Measure & Max-Width Classes
 .measure{ max-width: $measure-width;}
 
-.sans-serif { font-family: -apple-system, BlinkMacSystemFont, 'avenir next', avenir, helvetica, 'helvetica neue', ubuntu, roboto, noto, 'segoe ui', arial, sans-serif; }
+.eurostile {
+  font-family: 'eurostile-extended';
+}
+.michroma {
+  font-family: 'Michroma', sans-serif;
+}
+.sans-serif { font-family: "eurostile-extended", -apple-system, BlinkMacSystemFont, 'avenir next', avenir, helvetica, 'helvetica neue', ubuntu, roboto, noto, 'segoe ui', arial, sans-serif; }
 .serif { font-family: georgia, times, serif; }
 .system-sans-serif { font-family: sans-serif; }
 .system-serif { font-family: serif; }

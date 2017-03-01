@@ -56,9 +56,9 @@
 
 //Coordinates
 .top-0  { top: 0;}
-.top-s  {}
-.top-m  {}
-.top-l  {}
+.top-s  {top:$space-s;}
+.top-m  {top:$space-m;}
+.top-l  {top:$space-l;}
 .top-100{}
 .bottom-0{ bottom: 0;}
 .bottom-s{bottom:1rem;}
@@ -106,8 +106,9 @@
 .max-height-xxl{max-height: 128rem;}
 
 // Z-Index
-.z-10 {z-index:10;}
-// .z-neg-10 {z-index:-10;}
+.z10 {z-index:10;}
+.z1 {z-index:1;}
+.z-1 {z-index:-1;}
 
 //Floats
 
