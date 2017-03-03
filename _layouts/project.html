@@ -4,7 +4,7 @@ layout: default
 
 <div class="max-width-l float-center">
   <nav>
-    {% include project-nav.html %}
+    <!-- {% include project-nav.html %} -->
   </nav>
   <div class="col pad-x-s pad-y-l">
       <div class="pad-x-s pad-y-l">
@@ -83,9 +83,15 @@ layout: default
 </section>
 
 {% if page.extlink %}
-<section class="max-width-l float-center">
-  <a href="{{ page.extlink }}" class="pad-m">
-    <h4 class="float-center max-width-xs pad-x-l border bg-orange">Link to something --> </h4>
+<section class="max-width-l float-center pad-y-l pad-x-m">
+  <a href="{{ page.extlink }}" class="fade-in pad-m" target="_blank">
+    <h4 class="fade-in float-center max-width-xs pad-x-l border text-center">{{ page.cta }} ---> </h4>
   </a>
 </section>
 {% endif %}
+
+<section class="max-width-l float-center pad-y-xl pad-x-m">
+  <a href="{{ site.baseurl }}/portfolio/">
+    <h4><-- Back to portfolio</h4>
+  </a>
+</section>
