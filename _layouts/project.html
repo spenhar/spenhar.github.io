@@ -45,7 +45,7 @@ layout: default
           {% if page.collaborators %}
           <div class="border-top-thin col col-12">
             <h6 class="col col-3"><span class="b30 uppercase">Team</span></h6>
-            <h6 class="col col-9">{% for collaborator in page.collaborators %}<a href="{{ collaborator.link }}">{{ collaborator.name }}</a> {% endfor %}</h6>
+            <h6 class="col col-9">{% for collaborator in page.collaborators %}<a href="{{ collaborator.link }}">{{ collaborator.name }},</a> {% endfor %}</h6>
           </div>
           {% endif %}
 
