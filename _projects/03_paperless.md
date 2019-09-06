@@ -26,11 +26,11 @@ sections:
   - images: /img/pp/vibes.gif
     alt:  example of a haloween vibe content collection
     head: Content collections
-    desc: The goal here is to make a design tool that has a lot of customization power but very little cognitive load on the customer. One of my favorite challenges.
+    desc: By creating groups of related content, customer can pick an image that is closely related to the example they picked. You know like maybe a pumpkin instead of a ghoul.
   - images: /img/pp/flyer.gif
     alt:  mobile phone mockup of a flyer page
     head: Flyer phone friendly
-    desc: Our highest priority
+    desc: Always designing for the mobile experience first, has held us accountable for a future where we can reach people where they are - on their phone and not their email inbox.
   - images: /img/pp/flows.png
     alt:  hand drawn sketches of a user flow
     head: Flows on a whiteboard
