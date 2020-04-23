@@ -1,15 +1,17 @@
 ---
-layout: lightning
+layout: portfolio
 ---
-<section class="white pad-m max-width-xl">
-  <div class="float-left">
-    <h6 class="uppercase tracked fade-in">
-      <a class="" href="mailto:{{ site.email }}"><span class="white">hello@spenhar.com</span></a>
-    </h6>
+<section>
+  <div class="max-width-s float-center cf pad-x-s">
+    <div class="">
+        <h1 class="h2 heavy lead-s uppercase">Spencer Harrison</h1>
+        <p>Howdy, Spencer Harrison here. I'm a designer with a passion for web, design systems, and specifically applications and creation tools that allow the everyhuman to make something beyond their own capabilities.</p>
+        <a target="_blank" href="https://www.dropbox.com/s/wu4zf6g0rc0qjgy/SpencerHarrisonCV.pdf?dl=0">SpencerHarrisonCV.pdf</a>
+    </div>
   </div>
-  <!-- <div class="float-right">
-    <h6 class="uppercase tracked fade-in">
-      <a class="" href="{{ site.baseurl }}/portfolio/"><span class="white">Portfolio</span></a>
-    </h6>
-  </div> -->
+</section>
+<section id="design" class="">
+  <div class="max-width-s float-center cf pad-s">
+      {% include portfolio-loop.html %}
+  </div>
 </section>
