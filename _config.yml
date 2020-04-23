@@ -19,7 +19,7 @@ markdown: kramdown
 #Exclude files
 exclude:
   - node_modules
-  - gulpfile.js]
+  - gulpfile.js
   - .jekyll-cache
 
 collections:
