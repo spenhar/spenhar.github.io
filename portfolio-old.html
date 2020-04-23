@@ -1,0 +1,33 @@
+---
+layout: default
+title: portfolio
+---
+<section>
+  <div class="max-width-l float-center cf pad-x-s">
+    <div class="pad-s">
+      <h1 class="heavy lead-s uppercase"><span class="red">Spencer Harrison</span> is a <span class="orange">product designer</span> + <span class="yellow">music producer</h1>
+    </div>
+  </div>
+</section>
+<section id="design" class="">
+  <div class="max-width-l float-center cf pad-x-s">
+      {% for project in site.designs %}
+        {% if project.permalink %}
+        <a class="col col-6 m-col-4 pad-s border-box" href="../{{project.permalink}}">
+          <img src="{{ project.image }}" class="round-corners"/>
+          <!-- <h6 class="">{{ project.name }}</h6> -->
+        </a>
+
+        {% else %}
+        <a class="col col-6 m-col-4 pad-s border-box" href="{{project.extlink}}" target="_blank">
+          <img src="{{ project.image }}" class="round-corners"/>
+          <!-- <h6 class="">{{ project.name }}</h6> -->
+        </a>
+        {% endif %}
+      {% endfor %}
+  </div>
+</section>
+
+<!-- {% include project-loop.html %} -->
+
+{% include timeline.html %}
