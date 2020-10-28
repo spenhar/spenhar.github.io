@@ -1,15 +1,18 @@
-<header class="float-center cf pad-x-s">
-  <div class="">
-    <div class="float-left pad-x-m pad-y-l">
-      <div class="">
-        {{ site.title }}
-        <!-- <a class="" href="{{ site.baseurl }}/">{{ site.title }}</a> {% if page.title %}/ <a href="{{ site.baseurl }}/portfolio/"><span class="red">portfolio</span></a>{% endif %} -->
-      </div>
-    </div>
-    <nav class="float-right pad-x-s pad-y-l">
-      <div class="">
-          <a class="" href="mailto:{{ site.email }}">hello@spenhar.com</a>
-      </div>
+<!-- <header class="left-0 right-0 pad-x-m pos-fix"> -->
+    <nav class="navbar cf pad-x-m pad-y-m">
+        <a class="col col-12 m-col-2 " href="{{ site.baseurl }}/">Spencer Harrison</a>
+        
+        <!-- <a class="col col-12 m-col-9" href="">Projects</a> -->
+
+        <div class="dropdown col col-12 m-col-9">
+            <a class="dropbtn">Projects ↓</a>
+            <ul class="dropdown-content list-reset">
+              {% for project in site.projects %}
+                <li class="mar-b-xs"><a href="{{ project.permalink }}">{{ project.client }}</a></li>
+              {% endfor %}
+            </ul>
+          </div>
+
+        <a class="col col-12 m-col-1" href="/#footer">About</a>
     </nav>
-  </div>
-</header>
+<!-- </header> -->

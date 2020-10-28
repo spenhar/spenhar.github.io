@@ -32,7 +32,7 @@ h2 {
 
 h3 {
   font-size: $h3;
-  font-weight:600;
+  font-weight:400;
   @include breakpoint(l) {
     font-size: 1.5rem;
   };

@@ -5,13 +5,15 @@
 
   <body class="">
 
-    {% include portfolio-header.html %}
+    <header class="z10 left-0 right-0 pad-x-m pos-fix offwhite">
+      {% include portfolio-header.html %}   
+    </header>
 
-
-    <div class="">
+    <div class="offwhite">
       {{ content }}
     </div>
 
+    {% include footer.html %}
   </body>
 
 </html>
