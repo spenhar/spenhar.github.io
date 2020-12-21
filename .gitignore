@@ -1,6 +1,7 @@
 _site
 .sass-cache
-
+.jekyll-cache
+.jekyll-metadata
 
 gifolio-1.gif
 gifolio-2.gif

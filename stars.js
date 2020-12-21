@@ -1,3 +1,6 @@
+// If you want to implement again, this was in header, and probably need to reinstall p5.js
+// <!-- <script src="/stars.js"></script> -->
+
 function setup() {
   var canvas = createCanvas(800,600);
   canvas.position(width/2,height/2);
@@ -20,3 +23,5 @@ function draw() {
 };
 
 var stars = {};
+
+
