@@ -1,0 +1,8 @@
+<div class="dropdown col col-12 m-col-9">
+    <a class="dropbtn">Projects ↓</a>
+    <ul class="dropdown-content list-reset">
+      {% for project in site.projects %}
+        <li class="mar-b-xs"><a href="{{ project.permalink }}">{{ project.client }}</a></li>
+      {% endfor %}
+    </ul>
+</div>

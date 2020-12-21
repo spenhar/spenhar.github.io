@@ -1,0 +1,44 @@
+
+      {% for project in site.projects %}
+      <section class="mar-b-xxl align-top border-box">
+
+            <header class="project-hero border-super-thin mar-b-m" style="background-color:#{{ project.color }};">
+
+              {% if project.hero contains "mobile" %}
+                <div class="project-logo float-center max-width-s">
+                  <img src="{{ project.logo }}" alt="{{ project.client }} logo">
+                </div>
+                <div class="phone mar-x-l max-width-s float-center">
+                  <div class="">
+                      <img src="{{ project.hero }}" class="round-corners" alt="{{ section.alt }}"/>
+                  </div>
+                </div>
+              {% else %}
+              <div class="project-wrapper window-height col col-12 border-box" style="background-color:#{{ project.color }};" href="../{{project.permalink}}">
+                <div class="pad-l vimeo-wrapper">
+                  <iframe src="https://player.vimeo.com/video/{{ project.vimeo }}?background=1" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+                </div>
+              </div>
+
+              {% endif %}
+
+            </header>
+
+            <article class="grid-six pad-y-l">
+              <div class="g1">
+                <h3 class="">{{ project.client }}</h3>
+                <p class="h6"> {{ project.role }} </p>
+                <p class="h6"> {{ project.year }} </p>
+              </div>
+              
+              <div class="pad-b-m two-six">
+                {{ project.excerpt }}
+                <a href="../{{project.permalink}}" class="h6 tracked uppercase pad-y-l">View project →</a>
+              </div>
+              
+              
+            </article>
+
+
+      </section>
+      {% endfor %}

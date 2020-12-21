@@ -1,0 +1,19 @@
+{% for project in site.projects %}
+<div class="project-wrapper window-height col col-12 border-box" style="background-color:#{{ project.color }};" href="../{{project.permalink}}">
+  <div class="pad-l vimeo-wrapper">
+    <iframe src="https://player.vimeo.com/video/{{ project.vimeo }}?background=1" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+  </div>
+
+  <a href="../{{project.permalink}}" class="pos-abs w-100 h-100 z-10 bottom-0 pad-x-l pad-y-xl border-box VideoFullBleed__Link">
+      <span class="offwhite VideoFullBleed__AccessibleLinkSpan">View work for {{ project.client }} →</span>
+  </a>
+
+  <!-- <div class="pos-abs w-100 h-100 z-10 bottom-0 pad-x-l pad-y-xl  border-box">
+    <a href="../{{project.permalink}}" class="w-100 h-100 VideoFullBleed__Link">
+      <span class="offwhite VideoFullBleed__AccessibleLinkSpan">See {{ project.client }} →</span>
+    </a>
+  </div> -->
+
+
+</div>
+{% endfor %}
