@@ -14,7 +14,7 @@ excerpt_separator: <!--more-->
 
 image:    /img/pp/blushsquare.png
 hero:    /img/pp/hero.jpg
-vimeo:    472040938
+vimeo:    495901682
 permalink: portfolio/cosmicconcierge/
 extlink:  https://paperlesspost.com/flyer
 cta: Make an invitation
@@ -43,7 +43,7 @@ sections:
 
 
 ---
-When Stanton Jones calls, you pick up the phone. "Hey I've got this crazy idea to put a mirror on a giant spinning seat so it's like an infinity mirror galaxy in which you spin and reach a weightless euphoria. and there is are real chimes installed on the underside of the floating spinning seat that tell your fortune. He had me at "Hey..."
+When Stanton Jones calls, you pick up the phone. "Hello I've got this crazy idea to put a mirror on a giant spinning seat so it's like an infinity mirror galaxy in which you spin and reach a weightless euphoria. and there is are real chimes installed on the underside of the floating spinning seat that tell your fortune. He had me at 'hello'...
 
 <!--more-->
 

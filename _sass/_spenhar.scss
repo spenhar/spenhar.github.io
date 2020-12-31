@@ -2,7 +2,7 @@
   --alert-color: 234,65,19;
   --link-color: 17,17,17;
   /* --link-color: 3,95,230; */
-  --background-color: 255,254,242;
+  --background-color: 255,254,250;
   --text-color: 17,17,17;
 }
 
@@ -14,9 +14,17 @@
   }
 }
 body {
-  color: rgba(var(--text-color),.9);
-  background-color: rgba(var(--background-color),.92);
-  cursor: none;
+  color: rgba(var(--text-color),.96);
+  background-color: rgba(var(--background-color),.96);
+  // cursor: none;
+}
+
+.body-pad {
+  padding: 4rem;
+  @media only screen and (max-width: 736px){
+    padding: 1.2rem;
+  } 
+
 }
 
 body.lightning {
@@ -267,8 +275,8 @@ p {
   min-width: 177.77vh; /* Given a 16:9 aspect ratio, 16/9*100 = 177.77 */
   position: absolute;
   top: 50%;
-  left: 15%;
-  transform: translate(-15%, -50%);
+  left: 40%;
+  transform: translate(-40%, -50%);
 
   // position: absolute;
 
@@ -371,7 +379,32 @@ p {
 .about {
   font-size: 3.2rem;
   max-width: 24em;
+  @media only screen and (max-width: 736px){
+    font-size: 1.8rem;
+  } 
   p {
     margin-bottom: 2rem;
   }
 }
+
+
+// html {
+//   font-size: 62.5%;
+//   text-rendering: optimizeLegibility;
+//   -webkit-font-smoothing: antialiased;
+// }
+
+// @media (min-width: 600px) {
+//   html {
+//       font-size: 85%;
+//   }
+// }
+// @media (min-width: 900px) {
+//   html {
+//       font-size: 100%;
+//   }
+//   main>.section-wrapper>div {
+//       max-width: 30em;
+//       margin: auto;
+//   }    
+// }
