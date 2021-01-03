@@ -13,6 +13,9 @@ sass:
   sass_dir: _sass
   style: compressed
 
+plugins:
+  - jekyll-target-blank
+
 # Build settings
 markdown: kramdown
 

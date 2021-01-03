@@ -26,7 +26,7 @@ sections:
     desc: You'll need to design that event page, send out invitations, and you'll need some invite tracking and follow-up tools. We'll try to make this as easy as possible. After all, you've got a party to throw.
 
 ---
-In the sweltering midsummer of 2020, I began work on an site redesign for an alcohol beverage innovation company. Covering everything from design of drink collections, to the entire path from discovery to purchase. Almost all of this work has yet to ship to [Drinkworks.com](https://drinkworks.com/).
+Midsummer of 2020, I began work on an site redesign for an alcohol beverage innovation company. Covering everything from design of drink collections, to the entire path from discovery to purchase. Almost all of this work has yet to ship to [Drinkworks.com](https://drinkworks.com/).
 
 <!--more-->
 

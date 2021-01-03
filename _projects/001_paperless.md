@@ -5,7 +5,7 @@ title:  "Toss the printer: Flyer is here to white-glove your digital invitations
 client: Paperless Post
 color: 005AC8
 role: Product Design
-year:   2017 - 2020
+year:   2017-2020
 location: NYC
 collaborators:
 excerpt_separator: <!--more-->
@@ -42,9 +42,7 @@ sections:
 
 
 ---
-I joined in early 2017 to envision a new product within an established, and revered, online events company. Paperless Post practically invented the e-card and definitely perfected the digital-gold-foiled, high-touch aesthetic that party hosts love and trust for the biggest moments of their lives. But we wanted to support the album release parties just as well as those once-a-decade milesones.
-
-[Flyer by Paperless Post](https://paperlesspost.com/flyer/) was born.
+I joined in early 2017 to envision a new product within an established, and revered, online events company. Paperless Post practically invented the e-card and definitely perfected the digital-gold-foiled, high-touch aesthetic that party hosts love and trust for the biggest moments of their lives. But we wanted to support the album release parties just as well as those once-a-decade milesones. [Flyer by Paperless Post](https://paperlesspost.com/flyer/) was born.
 
 <!--more-->
 
