@@ -27,7 +27,7 @@ sections:
 
 
 ---
-When [Stanton Jones](https://stantonjon.es/work/cosmic-concierge) calls, you pick up. "Hello I'm dreaming up this installation of an infinity mirror spinning seat galaxy, like psychadelic teacups and there are real chimes installed on the underside of the floating spinning seat that tell your fortune. He had me at 'hello'...
+When [Stanton Jones](https://stantonjon.es/work/cosmic-concierge) calls, you pick up. "Hello I'm dreaming up this installation of an infinity mirror spinning seat galaxy, like psychadelic teacups and there are chimes installed on the underside of the floating spinning seat that tell your fortune. He had me at 'hello'...
 
 <!--more-->
 

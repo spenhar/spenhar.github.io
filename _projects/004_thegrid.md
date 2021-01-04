@@ -3,7 +3,7 @@ layout: project
 categories: portfolio design
 title:  "The Robots will steal your web design job."
 client: The Grid
-color: 30302E
+color: "48,48,46"
 role: Product Design
 year:   2015
 location: SF / Remote
@@ -52,7 +52,7 @@ sections:
 
 ---
 
-Think Squarespace but with AI robots making smart design decisions for you and churning out a custom website as unique as your content. The promise was huge. Building it was even bigger. I was designing interfaces to simplify advanced engineering layout systems in a way that was stupid simple to use. Working on web-design intelligence lit my passion for creation tools.
+Think Squarespace but with artificially intelligent design robots making decisions for you. I designed editing, creation, and publishing flows. Working on web-design intelligence lit my passion for creation tools.
 
 <!--more-->
 

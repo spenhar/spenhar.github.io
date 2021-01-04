@@ -2,7 +2,8 @@
       {% for project in site.projects %}
       <section class="mar-b-xl align-top border-box">
 
-            <header class="project-hero border-super-thin mar-b-m" style="background-color:#{{ project.color }};">
+            <header class="project-hero border-super-thin mar-b-m" 
+              style="background-color:rgba({{ project.color }},1);">
 
               {% if project.hero contains "mobile" %}
               <div class="project-logo float-center max-width-s">
@@ -14,18 +15,13 @@
                 </div>
               </div>
               {% elsif project.hero contains "wide" %}
-              <div class="float-center">
-                <div class="">
-                    
-                </div>
-              </div>
-              <div class="project-wrapper window-height" style="background-color:#{{ project.color }};" href="../{{project.permalink}}">
+              <div class="project-wrapper window-height" href="../{{project.permalink}}">
                 <div class="vimeo-wrapper">
-                  <img src="{{ project.hero }}" style=""/>
+                  <img src="{{ project.hero }}"/>
                 </div>
               </div>
               {% else %}
-              <div class="project-wrapper window-height col col-12 border-box" style="background-color:#{{ project.color }};" href="../{{project.permalink}}">
+              <div class="project-wrapper window-height col col-12 border-box" href="../{{project.permalink}}">
                 <div class="pad-l vimeo-wrapper">
                   <iframe src="https://player.vimeo.com/video/{{ project.vimeo }}?background=1" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
                 </div>

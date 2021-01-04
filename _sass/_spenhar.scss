@@ -9,20 +9,42 @@
 @media (prefers-color-scheme: dark) {
   :root {
       --link-color: 238,255,45;
-      --background-color: 0,18,44;
+      --background-color: 0,7,14;
       --text-color: 255,255,255;
+  }
+  .project-hero {
+    opacity: .8;
   }
 }
 body {
   color: rgba(var(--text-color),.96);
-  background-color: rgba(var(--background-color),.96);
+  background-color: rgba(var(--background-color),.98);
   // cursor: none;
 }
 
 .body-pad {
-  padding: 4rem;
+  padding-left:$space-xl;
+  padding-right:$space-xl;
   @media only screen and (max-width: 736px){
-    padding: 1.2rem;
+    padding-left:$space-m;
+    padding-right:$space-m;
+  } 
+
+}
+
+.header {
+  padding-top:$space-xl;
+  padding-bottom:$space-xl;
+  
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-gap: 1rem;
+
+  @media only screen and (max-width: 736px){
+    padding-top:$space-l;
+    padding-bottom:$space-l;
+    grid-template-columns: 3fr 1fr;
+    // grid-template-columns: repeat(auto-fill, minmax(256px, 1fr));
   } 
 
 }
@@ -133,6 +155,10 @@ img.nav-icon {
 
 /* For mobile */
   max-width: 280px;
+  @media only screen and (max-width: 736px){
+    max-width: 220px;
+  }
+
 }
 
 .phone::before {
@@ -425,14 +451,20 @@ p {
 
 
 .project-hero {
-  height: 75vh;
+  min-height: 596px;
+  max-height: 80vh;
   overflow: hidden;
+  @media only screen and (max-width: 736px){
+    min-height: 480px;
+    max-height: 560px;
+  }
 }
 
 .project-logo {
   max-width: 320px;
   padding: 6rem 2rem 4rem;
   @media only screen and (max-width: 736px){
+    max-width: 280px;
     padding: 4rem 2rem;
   } 
 

@@ -3,7 +3,7 @@ layout: project
 categories: portfolio design
 title:  "Homebar stuff with pods"
 client: Drinkworks
-color: 40BAEE
+color: "64,186,238"
 role: Product Design
 year:   2020
 location: NYC
