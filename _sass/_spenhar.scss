@@ -9,11 +9,11 @@
 @media (prefers-color-scheme: dark) {
   :root {
       --link-color: 238,255,45;
-      --background-color: 0,7,14;
+      --background-color: 0,11,29;
       --text-color: 255,255,255;
   }
   .project-hero {
-    opacity: .8;
+    opacity: .75;
   }
 }
 body {
