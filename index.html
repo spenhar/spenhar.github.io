@@ -1,0 +1,2497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Research — Float</title>
+  <meta name="description" content="A scrollable portfolio — drag to explore.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;600&family=Noto+Serif:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+
+  <!-- Marked.js for rendering desc.md files -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+  <!-- Optional: embed items for file:// or offline — see README (omit when using Are.na only). -->
+
+  <style>
+    /* ─────────────────────────────────────────────
+       RESET & TOKENS
+    ───────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --fg:       #000000;
+      --bg:       #ffffff;
+      --surface:  rgba(255, 255, 255, 0.97);
+      --accent:   rgb(5, 0, 255);
+      --mono:     'Noto Sans Mono', monospace;
+      --serif:    'Noto Serif', serif;
+      --fs:       13px;
+      --tile:     33.3333%;   /* each tile = 1/3 of container */
+      --cols:     5;          /* grid columns */
+      --rows:     5;          /* grid rows  */
+    }
+
+    html, body {
+      width: 100%; height: 100%;
+      overflow: hidden;
+      background: #ffffff;
+      color: var(--fg);
+      font-family: var(--mono);
+      font-size: var(--fs);
+      touch-action: none;
+    }
+
+    /* ─────────────────────────────────────────────
+       NAV
+    ───────────────────────────────────────────── */
+    #nav {
+      position: fixed;
+      inset: 0 0 auto 0;
+      z-index: 50;
+      pointer-events: none;
+    }
+
+    .nav-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 10px 20px 0;
+    }
+
+    .nav-row-sub {
+      display: flex;
+      gap: 24px;
+      padding: 3px 20px 0;
+    }
+
+    #nav a, #nav button {
+      pointer-events: auto;
+      font-family: var(--mono);
+      font-size: var(--fs);
+      color: var(--fg);
+      text-decoration: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.15s;
+      letter-spacing: 0;
+    }
+    #nav a:hover, #nav button:hover { opacity: 0.35; }
+    #nav a.active { color: var(--accent); }
+
+    .nav-view-btn {
+      pointer-events: auto;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--fg);
+      text-decoration: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      letter-spacing: 0.02em;
+      opacity: 0.45;
+      transition: opacity 0.15s, color 0.15s;
+    }
+    .nav-view-btn:hover { opacity: 0.85; }
+    .nav-view-btn.active {
+      opacity: 1;
+      color: var(--accent);
+    }
+
+    .site-name { font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+    .nav-links  { display: flex; gap: 24px; }
+
+    /* ─────────────────────────────────────────────
+       STAGE & TILING CONTAINER
+    ───────────────────────────────────────────── */
+    #stage {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      cursor: grab;
+    }
+    #stage.grabbing { cursor: grabbing; }
+
+    /*
+      The container is a SQUARE centred on screen.
+      Landscape: 100vw × 100vw  →  centred vertically
+      Portrait:  133vh × 133vh  →  centred horizontally
+      This matches the original source exactly.
+    */
+    #container {
+      position: absolute;
+      /* Square: use the viewport's shorter dimension as the reference */
+      width:  100vw;
+      height: 100vw;
+      top:  50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      overflow: visible;
+    }
+
+    /* Portrait override */
+    @media (orientation: portrait) {
+      #container {
+        width:  133vh;
+        height: 133vh;
+      }
+    }
+
+    /* ─────────────────────────────────────────────
+       TILES
+       Each tile = 33.333% of #container.
+       Positioned with translate3d in JS.
+    ───────────────────────────────────────────── */
+    .tile {
+      position: absolute;
+      width:  var(--tile);
+      height: var(--tile);
+      overflow: visible;
+      will-change: transform;
+      transform-origin: center center;
+    }
+
+    /* Only ease transform — never animate filter/blur (causes white compositing flashes with scaled tiles). */
+    #stage.tile-animate .tile {
+      transition: transform 0.34s ease-in-out;
+    }
+
+    #stage.canvas-focus-mode {
+      cursor: default;
+    }
+
+    /* Detail: non-focus blur (no filter in .tile transition — blur snaps, transform still eases). */
+    #stage.canvas-focus-mode .tile:not(.tile--focus) {
+      filter: blur(1.5px);
+    }
+    #stage.canvas-focus-mode .tile.tile--focus {
+      filter: none;
+      z-index: 20;
+      opacity: 1;
+    }
+    /* Item may still be mid–stagger fade before first itemIn ends */
+    #stage.canvas-focus-mode .tile.tile--focus .item {
+      opacity: 1;
+    }
+    /* After first fade-in, stay visible forever (avoids restaging itemIn + long animation-delay on focus exit). */
+    .item.item--shown {
+      opacity: 1;
+      animation: none;
+    }
+
+    /* ─────────────────────────────────────────────
+       ITEMS — centered in tile; width % is share of tile (not full-bleed frame).
+    ───────────────────────────────────────────── */
+    .item {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      max-width: 92%;
+      max-height: 92%;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      pointer-events: auto;
+      cursor: pointer;
+      opacity: 0;
+      animation: itemIn 0.5s ease forwards;
+    }
+
+    #stage.canvas-focus-mode .tile.tile--focus .item img {
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+
+    .item img {
+      display: block;
+      width: auto;
+      height: auto;
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      background: transparent;
+      pointer-events: none;
+      user-select: none;
+      -webkit-user-drag: none;
+      draggable: false;
+    }
+
+    .item video {
+      display: block;
+      width: auto;
+      height: auto;
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      pointer-events: auto;
+      background: #000;
+    }
+
+    .item audio {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      pointer-events: auto;
+    }
+
+    .item-text-preview {
+      width: 100%;
+      max-width: 100%;
+      max-height: 100%;
+      overflow: hidden;
+      padding: 10px 12px;
+      box-sizing: border-box;
+      font-family: var(--serif);
+      font-size: clamp(10px, 2.5vw, 15px);
+      line-height: 1.45;
+      color: rgba(0, 0, 0, 0.82);
+      background: rgba(255, 255, 255, 0.94);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 6;
+      line-clamp: 6;
+      pointer-events: none;
+    }
+
+    .item-text-preview p { margin: 0 0 0.5em; }
+    .item-text-preview p:last-child { margin-bottom: 0; }
+
+    .item-embed-badge,
+    .item-file-card {
+      width: 100%;
+      min-height: 64px;
+      padding: 12px 14px;
+      box-sizing: border-box;
+      font-family: var(--mono);
+      font-size: clamp(9px, 2vw, 12px);
+      line-height: 1.4;
+      color: rgba(0, 0, 0, 0.75);
+      background: rgba(245, 245, 245, 0.95);
+      border: 1px solid rgba(0, 0, 0, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    .item-embed-badge { color: var(--accent); border-color: rgba(5, 0, 255, 0.35); }
+
+    /* Items with a description get a subtle indicator */
+    .item.has-desc::after {
+      content: '';
+      position: absolute;
+      top: 8px; right: 8px;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      opacity: 0;
+      transition: opacity 0.2s;
+      pointer-events: none;
+    }
+    .item.has-desc:hover::after { opacity: 1; }
+
+    /* ─────────────────────────────────────────────
+       FADE-IN on load (opacity only — avoids hover/animation restarts flashing)
+    ───────────────────────────────────────────── */
+    @keyframes itemIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    /* ─────────────────────────────────────────────
+       DETAIL VIEW (image left, description popover right — radar-style)
+    ───────────────────────────────────────────── */
+    #lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      pointer-events: none;
+      /* No opacity transition — fading the full-screen stack over the canvas caused white flashes. */
+      transition: none;
+    }
+    #lightbox.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    #lb-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(255, 255, 255, 0.94);
+      cursor: pointer;
+      pointer-events: none;
+    }
+    #lightbox.open #lb-backdrop {
+      pointer-events: auto;
+    }
+
+    #lb-row {
+      position: relative;
+      z-index: 1;
+      flex: 1 1 auto;
+      min-height: 0;
+      width: 100%;
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      gap: 24px;
+      padding: 24px;
+      box-sizing: border-box;
+      pointer-events: none;
+    }
+
+    #lb-image-area {
+      flex: 1 1 0;
+      min-width: 0;
+      min-height: 0;
+      max-height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 8px;
+      cursor: pointer;
+      /* Must stay none when closed — parent pointer-events:none does not apply to descendants with auto */
+      pointer-events: none;
+      overflow: hidden;
+    }
+    #lightbox.open #lb-image-area {
+      pointer-events: auto;
+    }
+
+    #lightbox.image-only #lb-image-area {
+      flex: 1 1 0;
+      max-width: 100%;
+    }
+
+    #lb-media-mount {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      max-width: 100%;
+      max-height: 100%;
+      pointer-events: auto;
+    }
+
+    /*
+      Do not use % max-height alone — #lb-media-mount shrink-wraps to the image, so % chains collapse
+      and HD swaps can “zoom” or blow mobile layout. Cap with dvh against the real viewport instead.
+    */
+    #lb-media-mount > img {
+      box-sizing: border-box;
+      max-width: 100%;
+      max-height: min(calc(100dvh - 120px), calc(100vh - 120px));
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      object-position: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+    #lightbox.open #lb-media-mount > img {
+      opacity: 1;
+    }
+
+    #lb-media-mount > video {
+      max-width: 100%;
+      max-height: min(calc(100dvh - 120px), calc(100vh - 120px));
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      background: #000;
+    }
+
+    #lb-media-mount > audio {
+      width: min(100%, 420px);
+    }
+
+    #lb-media-mount > .lb-text-stage {
+      max-width: min(100%, 520px);
+      max-height: 100%;
+      overflow-y: auto;
+      padding: 16px 20px;
+      font-family: var(--serif);
+      font-size: 15px;
+      line-height: 1.6;
+      color: rgba(0, 0, 0, 0.85);
+      text-align: left;
+      border: 1px solid rgba(0, 0, 0, 0.12);
+      background: rgba(255, 255, 255, 0.98);
+    }
+
+    #lb-media-mount > .lb-embed-frame {
+      width: min(100%, 720px);
+      aspect-ratio: 16 / 9;
+      border: none;
+      background: #111;
+    }
+
+    #lb-panel {
+      flex: 0 0 auto;
+      width: min(420px, 36vw);
+      max-height: calc(100dvh - 48px);
+      min-height: 0;
+      display: none;
+      flex-direction: column;
+      padding: 14px 14px 16px;
+      overflow-y: auto;
+      pointer-events: none;
+      border: 1px solid rgba(0, 0, 0, 0.28);
+      background: rgba(255, 255, 255, 0.96);
+      font-size: 11px;
+      line-height: 1.45;
+      align-self: start;
+    }
+    #lightbox.open:not(.image-only) #lb-panel {
+      display: flex;
+      pointer-events: auto;
+    }
+
+    #lb-panel-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    #lb-panel-header #lb-title {
+      margin: 0;
+      flex: 1;
+      min-width: 0;
+      padding-right: 0;
+    }
+
+    .lb-panel-tools {
+      display: flex;
+      align-items: flex-start;
+      gap: 2px;
+      flex-shrink: 0;
+    }
+
+    .lb-icon-external {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--mono);
+      font-size: 15px;
+      line-height: 1;
+      color: var(--fg);
+      text-decoration: none;
+      opacity: 0.45;
+      padding: 4px 6px;
+      transition: opacity 0.15s, color 0.15s;
+    }
+    .lb-icon-external:hover {
+      opacity: 1;
+      color: var(--accent);
+    }
+
+    #lb-project-link {
+      margin-top: 22px;
+    }
+    #lb-project-link:empty {
+      display: none;
+    }
+    #lb-project-link a.lb-project-cta {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--accent);
+      text-underline-offset: 3px;
+    }
+    #lb-project-link a.lb-project-cta:hover {
+      opacity: 0.8;
+    }
+
+    /* Minimal panel: project/title + narrative + optional CTA (extra metadata stays on item, not shown). */
+    #lightbox.lb-panel-minimal #lb-tags,
+    #lightbox.lb-panel-minimal #lb-meta,
+    #lightbox.lb-panel-minimal #lb-alt {
+      display: none !important;
+    }
+    #lightbox.lb-panel-minimal #lb-title {
+      font-weight: 600;
+      font-size: 19px;
+      line-height: 1.3;
+      margin-bottom: 12px;
+    }
+    #lightbox.lb-panel-minimal #lb-body {
+      font-size: 14px;
+      line-height: 1.6;
+      color: rgba(0, 0, 0, 0.82);
+    }
+    #lightbox.lb-panel-minimal #lb-body p {
+      margin-bottom: 0.85em;
+    }
+    #lightbox.lb-panel-minimal #lb-body p:last-child {
+      margin-bottom: 0;
+    }
+    #lightbox.lb-panel-minimal #lb-project-link a.lb-cta-button {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      padding: 10px 20px;
+      line-height: 1.2;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+    #lightbox.lb-panel-minimal #lb-project-link a.lb-cta-button:hover {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    #lb-panel-close {
+      flex: 0 0 auto;
+      background: none;
+      border: none;
+      font-family: var(--mono);
+      font-size: 18px;
+      line-height: 1;
+      cursor: pointer;
+      color: var(--fg);
+      padding: 4px 6px;
+      opacity: 0.45;
+      transition: opacity 0.15s;
+    }
+    #lb-panel-close:hover { opacity: 1; }
+
+    #lb-panel-inner {
+      padding-right: 4px;
+    }
+
+    #lb-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+    .lb-tag {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      padding: 2px 8px;
+      border-radius: 2px;
+      opacity: 0.7;
+    }
+
+    #lb-title {
+      font-family: var(--serif);
+      font-size: 17px;
+      line-height: 1.35;
+    }
+
+    #lb-meta {
+      display: grid;
+      gap: 4px;
+      margin-bottom: 12px;
+      font-size: 11px;
+      color: rgba(0,0,0,0.65);
+    }
+    .lb-meta-row {
+      display: flex;
+      gap: 8px;
+      line-height: 1.4;
+    }
+    .lb-meta-label {
+      min-width: 84px;
+      opacity: 0.55;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    #lb-body {
+      font-family: var(--serif);
+      font-size: 13px;
+      line-height: 1.65;
+      color: rgba(0,0,0,0.78);
+    }
+    #lb-body p { margin-bottom: 1em; }
+    #lb-body p:last-child { margin-bottom: 0; }
+    #lb-body a {
+      color: var(--accent);
+      text-underline-offset: 2px;
+    }
+
+    #lb-alt {
+      font-family: var(--serif);
+      font-size: 11px;
+      font-style: italic;
+      color: rgba(0,0,0,0.45);
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(0,0,0,0.08);
+    }
+
+    /* Canvas detail: fully transparent overlay (still catches clicks) so the hero on #stage isn’t washed out. */
+    #lightbox.canvas-focus #lb-backdrop {
+      background: transparent;
+    }
+    #lightbox.canvas-focus #lb-image-area {
+      display: none !important;
+    }
+    #lightbox.canvas-focus #lb-row {
+      justify-content: flex-end;
+      align-items: flex-end;
+      padding: 16px 22px 24px;
+      gap: 0;
+    }
+    #lightbox.canvas-focus #lb-panel {
+      width: min(400px, 92vw);
+      max-height: min(78dvh, calc(100vh - 24px));
+      align-self: flex-end;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+    }
+
+    @media (max-width: 800px) {
+      #lb-row {
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: flex-start;
+        padding: 16px;
+        gap: 16px;
+      }
+      #lb-image-area {
+        flex: 0 1 auto;
+        min-height: 0;
+        max-height: min(52dvh, 100%);
+      }
+      #lb-media-mount > img,
+      #lb-media-mount > video {
+        max-height: min(48dvh, calc(100dvh - 140px), calc(100vh - 140px));
+      }
+      #lb-panel {
+        width: 100%;
+        max-width: 100%;
+        max-height: min(44dvh, calc(100dvh - 32px));
+        align-self: stretch;
+      }
+      #lightbox.canvas-focus #lb-row {
+        flex-direction: column;
+        justify-content: flex-end;
+        align-items: stretch;
+        padding: 12px 14px 18px;
+      }
+      #lightbox.canvas-focus #lb-panel {
+        width: 100%;
+        max-width: 100%;
+        max-height: min(52dvh, calc(100dvh - 20px));
+      }
+    }
+
+    /* ─────────────────────────────────────────────
+       HINT
+    ───────────────────────────────────────────── */
+    #hint {
+      position: fixed;
+      bottom: 18px; right: 20px;
+      font-size: 11px;
+      opacity: 0.3;
+      pointer-events: none;
+      transition: opacity 1.5s;
+      z-index: 50;
+    }
+    #hint.gone { opacity: 0; }
+
+    #secret-toast {
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      transform: translateX(-50%) translateY(12px);
+      padding: 8px 12px;
+      border: 1px solid rgba(0,0,0,0.25);
+      background: rgba(255,255,255,0.95);
+      font-size: 11px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      z-index: 300;
+    }
+    #secret-toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    #radar {
+      position: fixed;
+      left: 20px;
+      bottom: 20px;
+      min-width: 180px;
+      padding: 10px;
+      border: 1px solid rgba(0,0,0,0.3);
+      background: rgba(255,255,255,0.92);
+      font-size: 11px;
+      line-height: 1.45;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+      z-index: 80;
+    }
+    #radar.open { opacity: 1; }
+    #radar .label { opacity: 0.5; text-transform: uppercase; letter-spacing: 0.04em; }
+
+    body.night-mode {
+      filter: invert(1) hue-rotate(180deg);
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- ── NAV ── -->
+  <div id="nav">
+    <div class="nav-row">
+      <span class="site-name">Research</span>
+      <nav class="nav-links">
+        <a href="#" class="active">Float</a>
+        <a href="#">Grid</a>
+        <a href="#">Table</a>
+      </nav>
+    </div>
+    <div class="nav-row-sub" aria-label="Plane layout">
+      <button type="button" id="nav-view-float" class="nav-view-btn active" aria-pressed="true">Plane</button>
+      <button type="button" id="nav-view-projects" class="nav-view-btn" aria-pressed="false">By project</button>
+    </div>
+  </div>
+
+  <!-- ── STAGE ── -->
+  <div id="stage">
+    <div id="container">
+      <!-- tiles injected by JS -->
+    </div>
+  </div>
+
+  <!-- ── DETAIL VIEW ── -->
+  <div id="lightbox" class="image-only" role="dialog" aria-modal="true" aria-hidden="true">
+    <div id="lb-backdrop" aria-hidden="true"></div>
+    <div id="lb-row">
+      <div id="lb-image-area">
+        <div id="lb-media-mount"></div>
+      </div>
+      <aside id="lb-panel" aria-label="Project details">
+        <div id="lb-panel-header">
+          <h2 id="lb-title"></h2>
+          <div class="lb-panel-tools">
+            <a id="lb-arena-source" class="lb-icon-external" href="#" target="_blank" rel="noopener noreferrer" hidden aria-label="Open this block on Are.na"><span aria-hidden="true">↗</span></a>
+            <button type="button" id="lb-panel-close" aria-label="Close details">×</button>
+          </div>
+        </div>
+        <div id="lb-panel-inner">
+          <div id="lb-tags"></div>
+          <div id="lb-meta"></div>
+          <div id="lb-body"></div>
+          <div id="lb-project-link"></div>
+          <p id="lb-alt"></p>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <div id="hint">drag to explore</div>
+  <div id="secret-toast" aria-live="polite"></div>
+  <div id="radar" aria-hidden="true"></div>
+
+  <script>
+  (() => {
+    'use strict';
+
+    // ─────────────────────────────────────────────
+    // CONFIG
+    // ─────────────────────────────────────────────
+    /** Default 5×5; Are.na mode may grow to fit every block (see `setGridDimensionsForArena`). */
+    let COLS = 5;
+    let ROWS = 5;
+    // Step between adjacent cell centers, in tile-% (100 = one tile width apart)
+    const STEP = 80;
+    /** Applied only when painting tiles — keeps more plane visible; focus zoom feels stronger. */
+    const PLANE_ITEM_SIZE_SCALE = 0.66;
+
+    function halfSpanX() {
+      return (COLS * STEP) / 2;
+    }
+    function halfSpanY() {
+      return (ROWS * STEP) / 2;
+    }
+
+    /** Expand grid so all channel items get a cell (row-major), at least 5 columns wide. */
+    function setGridDimensionsForArena(itemCount) {
+      if (itemCount <= 0) {
+        COLS = 5;
+        ROWS = 5;
+        return;
+      }
+      COLS = Math.max(5, Math.ceil(Math.sqrt(itemCount)));
+      ROWS = Math.ceil(itemCount / COLS);
+      while (COLS * ROWS < itemCount) ROWS += 1;
+    }
+
+    // Friction & physics
+    const FRICTION  = 0.87;
+    const MIN_VEL   = 0.15;
+
+    /** `arena` = load blocks from an Are.na channel (see https://www.are.na/developers/all.md). `json` = items.json / PORTFOLIO_ITEMS */
+    const CONTENT_SOURCE     = 'arena';
+    const ARENA_CHANNEL_SLUG = 'portfolio-4wqcbomq2t8';
+    const ARENA_API_BASE     = 'https://api.are.na/v3';
+
+    // ─────────────────────────────────────────────
+    // DATA — see CONTENT_SOURCE: Are.na channel, PORTFOLIO_ITEMS, or data/items.json
+    // ─────────────────────────────────────────────
+    let ITEMS = [];
+
+    async function fetchAllArenaContents(slug) {
+      const out = [];
+      let page = 1;
+      const per = 100;
+      for (;;) {
+        const url = `${ARENA_API_BASE}/channels/${encodeURIComponent(slug)}/contents?per=${per}&page=${page}&sort=position_desc`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`Are.na contents failed (${res.status})`);
+        const json = await res.json();
+        const chunk = json.data || [];
+        out.push(...chunk);
+        if (!json.meta || !json.meta.has_more_pages) break;
+        page += 1;
+        if (page > 30) break;
+      }
+      return out;
+    }
+
+    /** Map Are.na API block → site item (before normalizeItem). Returns null to skip unsupported rows. */
+    function arenaBlockToItem(block) {
+      const label = block.title || (block.content && block.content.plain && block.content.plain.slice(0, 80)) || `Block ${block.id}`;
+      const base = {
+        id: `arena-${block.id}`,
+        type: 'project',
+        tile: [0, 0],
+        width: 50,
+        marginLeft: 10,
+        marginTop: 10,
+        aspectRatio: 1,
+        src: '',
+        srcHD: '',
+        alt: label,
+        tags: ['are.na', block.type],
+        hasDesc: true,
+        descUrl: null,
+        arenaBlockId: block.id,
+        arenaBlockType: block.type,
+        arenaBlockUrl: `https://www.are.na/block/${block.id}`,
+        arenaDescription: block.description || null,
+        arenaImageAlt: null,
+        blockKind: 'unsupported',
+        textPlain: '',
+        textHtml: '',
+        mediaUrl: '',
+        embedHtml: ''
+      };
+
+      if (block.type === 'Channel') return null;
+
+      if (block.type === 'Image' && block.image) {
+        const im = block.image;
+        const isGif = (im.content_type || '').toLowerCase() === 'image/gif';
+        base.blockKind = isGif ? 'gif' : 'image';
+        base.src = (im.medium && im.medium.src) || (im.small && im.small.src) || im.src;
+        base.srcHD = (im.large && im.large.src) || im.src;
+        base.aspectRatio = im.aspect_ratio || (im.width && im.height ? im.width / im.height : 1);
+        base.arenaImageAlt = im.alt_text || null;
+        base.alt = im.alt_text || stripImageExtension(block.title || '') || label;
+        if (im.width && im.height) {
+          base.arenaDimensions = `${im.width} × ${im.height}px`;
+        }
+        return finishArenaItem(block, base);
+      }
+
+      if (block.type === 'Text' && block.content) {
+        base.blockKind = 'text';
+        base.aspectRatio = 1.1;
+        base.textPlain = block.content.plain || '';
+        base.textHtml = block.content.html || '';
+        return finishArenaItem(block, base);
+      }
+
+      if (block.type === 'Attachment' && block.attachment) {
+        const ct = (block.attachment.content_type || '').toLowerCase();
+        base.mediaUrl = block.attachment.url || '';
+        if (ct.startsWith('audio/')) {
+          base.blockKind = 'audio';
+          base.aspectRatio = 0.38;
+          return finishArenaItem(block, base);
+        }
+        if (ct.startsWith('video/')) {
+          base.blockKind = 'video';
+          base.aspectRatio = 16 / 9;
+          return finishArenaItem(block, base);
+        }
+        if (ct.startsWith('image/')) {
+          base.blockKind = 'image';
+          base.src = base.mediaUrl;
+          base.srcHD = base.mediaUrl;
+          base.aspectRatio = 1;
+          return finishArenaItem(block, base);
+        }
+        base.blockKind = 'file';
+        base.aspectRatio = 0.55;
+        return finishArenaItem(block, base);
+      }
+
+      if (block.type === 'Embed' && block.embed) {
+        base.blockKind = 'embed';
+        base.embedHtml = typeof block.embed.html === 'string' ? block.embed.html : '';
+        base.aspectRatio = 1;
+        return finishArenaItem(block, base);
+      }
+
+      if (block.type === 'Link') {
+        if (block.image && block.image.src) {
+          base.blockKind = 'image';
+          base.src = (block.image.medium && block.image.medium.src) || (block.image.small && block.image.small.src) || block.image.src;
+          base.srcHD = (block.image.large && block.image.large.src) || block.image.src;
+          base.aspectRatio = block.image.aspect_ratio || 1;
+          if (block.image.alt_text) {
+            base.arenaImageAlt = block.image.alt_text;
+            base.alt = block.image.alt_text;
+          }
+          return finishArenaItem(block, base);
+        }
+        const url = (block.source && block.source.url) || '';
+        base.blockKind = 'text';
+        base.aspectRatio = 0.9;
+        base.textPlain = url || label;
+        const safeUrl = url.replace(/"/g, '&quot;');
+        base.textHtml = url
+          ? `<p><a href="${safeUrl}" target="_blank" rel="noopener noreferrer">${escapeHtml(block.title || url)}</a></p>`
+          : `<p>${escapeHtml(label)}</p>`;
+        return finishArenaItem(block, base);
+      }
+
+      return null;
+    }
+
+    function escapeHtml(s) {
+      return String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    /** Strip common image extensions so filenames read cleaner as a title fallback. */
+    function stripImageExtension(name) {
+      return String(name || '').replace(/\.(jpe?g|png|gif|webp|avif)$/i, '').trim();
+    }
+
+    /**
+     * Are.na v3 may return `description` as a string or as a rich object (like block `content`).
+     */
+    function arenaDescriptionToString(desc) {
+      if (desc == null) return '';
+      if (typeof desc === 'string') return desc;
+      if (typeof desc === 'object') {
+        if (typeof desc.markdown === 'string' && desc.markdown.trim()) return desc.markdown;
+        if (typeof desc.plain === 'string' && desc.plain.trim()) return desc.plain;
+        if (typeof desc.html === 'string' && desc.html.trim()) {
+          const tmp = document.createElement('div');
+          tmp.innerHTML = desc.html;
+          return tmp.textContent || tmp.innerText || '';
+        }
+      }
+      return '';
+    }
+
+    function isArenaInternalUrl(url) {
+      try {
+        const h = new URL(url).hostname.replace(/^www\./, '');
+        return h === 'are.na' || h.endsWith('.are.na');
+      } catch (_) {
+        return /are\.na\//i.test(url);
+      }
+    }
+
+    /** First non–Are.na http(s) link: markdown [label](url) or bare URL in text. */
+    function extractPrimaryProjectUrl(text) {
+      if (!text || typeof text !== 'string') return null;
+      const mdRe = /\[([^\]]*)\]\((https?:\/\/[^)\s]+)\)/g;
+      let m;
+      while ((m = mdRe.exec(text)) !== null) {
+        const url = m[2].replace(/\)+$/, '');
+        if (!isArenaInternalUrl(url)) {
+          const lab = (m[1] || '').trim();
+          return { url, label: lab || formatUrlLabel(url) };
+        }
+      }
+      const bareRe = /https?:\/\/[^\s\]<>"')]+/gi;
+      while ((m = bareRe.exec(text)) !== null) {
+        let url = m[0].replace(/[.,;:!?)]+$/, '');
+        if (!isArenaInternalUrl(url)) return { url, label: formatUrlLabel(url) };
+      }
+      return null;
+    }
+
+    function formatUrlLabel(url) {
+      try {
+        const u = new URL(url);
+        let s = u.hostname.replace(/^www\./, '') + u.pathname.replace(/\/$/, '');
+        return s.length > 48 ? s.slice(0, 46) + '…' : s;
+      } catch (_) {
+        return 'Visit site';
+      }
+    }
+
+    function stripFirstProjectUrl(text, proj) {
+      if (!proj || !text) return text;
+      let t = text.trim();
+      const mdRe = /\[([^\]]*)\]\((https?:\/\/[^)\s]+)\)/;
+      const mdMatch = t.match(mdRe);
+      if (mdMatch) {
+        const u = mdMatch[2].replace(/\)+$/, '');
+        if (u === proj.url || u.replace(/\/$/, '') === proj.url.replace(/\/$/, '')) {
+          t = t.replace(mdRe, '').replace(/\n{3,}/g, '\n\n').trim();
+          return t;
+        }
+      }
+      if (t.includes(proj.url)) {
+        t = t.replace(proj.url, '').replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
+      }
+      return t;
+    }
+
+    function renderArenaMarkdown(md) {
+      if (typeof md !== 'string' || !md.trim()) return '';
+      try {
+        const out = typeof marked !== 'undefined' ? marked.parse(md.trim()) : null;
+        if (typeof out === 'string') return out;
+        if (out && typeof out === 'object' && typeof out.toString === 'function' && out.toString !== Object.prototype.toString) {
+          return String(out);
+        }
+        return `<p>${escapeHtml(md.trim())}</p>`;
+      } catch (_) {
+        return `<p>${escapeHtml(md.trim())}</p>`;
+      }
+    }
+
+    /**
+     * Inline hashtags: #Merch (# immediately followed by a word). Not markdown headings (# space).
+     * Returns tags + body with those tokens removed; keeps newlines for markdown.
+     */
+    function extractHashtagsAndBody(raw) {
+      const s = arenaDescriptionToString(raw);
+      if (!s.trim()) return { tags: [], body: '' };
+      const tagList = [];
+      const seen = new Set();
+      const re = /(^|[\s.,;:!?()[\]{}'"„«»\n>])#([\w][\w-]*)(?=\s|$|[.,;:!?)>\n]|\[)/gm;
+      let m;
+      while ((m = re.exec(s)) !== null) {
+        const k = m[2].toLowerCase();
+        if (!seen.has(k)) {
+          seen.add(k);
+          tagList.push(m[2]);
+        }
+      }
+      let body = s.replace(/(^|[\s.,;:!?()[\]{}'"„«»\n>])#([\w][\w-]*)(?=\s|$|[.,;:!?)>\n]|\[)/gm, '$1');
+      body = body.replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
+      return { tags: tagList, body };
+    }
+
+    /** `Tags: merch, graphic design` — any line (case-insensitive), comma-separated; line removed from body. */
+    function extractStructuredTagsLines(md) {
+      if (!md || typeof md !== 'string') return { tagLabels: [], rest: md || '' };
+      const lines = md.replace(/\r\n/g, '\n').split('\n');
+      const tagLabels = [];
+      const kept = [];
+      for (let i = 0; i < lines.length; i++) {
+        const t = lines[i].trim();
+        const m = t.match(/^tags:\s*(.+)$/i);
+        if (m) {
+          m[1].split(',').forEach(part => {
+            const x = part.trim();
+            if (!x) return;
+            const k = x.toLowerCase();
+            if (!tagLabels.some(y => y.toLowerCase() === k)) tagLabels.push(x);
+          });
+        } else {
+          kept.push(lines[i]);
+        }
+      }
+      const rest = kept.join('\n').replace(/\n{3,}/g, '\n\n').trim();
+      return { tagLabels, rest };
+    }
+
+    function mergeArenaTagList(userTagList, blockType) {
+      const seen = new Set();
+      const out = [];
+      for (const t of userTagList) {
+        const k = String(t).toLowerCase();
+        if (seen.has(k)) continue;
+        seen.add(k);
+        out.push(t);
+      }
+      for (const t of [blockType, 'are.na']) {
+        const k = String(t).toLowerCase();
+        if (seen.has(k)) continue;
+        seen.add(k);
+        out.push(t);
+      }
+      return out;
+    }
+
+    /**
+     * Leading `Label: value` lines (one per line) → structured meta rows; rest is narrative markdown.
+     * Avoids CommonMark merging single newlines into one paragraph.
+     */
+    function splitLeadingKeyValueMeta(md) {
+      if (!md || typeof md !== 'string') return { rows: [], rest: md || '' };
+      const lines = md.replace(/\r\n/g, '\n').split('\n');
+      const rows = [];
+      let i = 0;
+      while (i < lines.length && !lines[i].trim()) i++;
+      for (; i < lines.length; i++) {
+        const t = lines[i].trim();
+        if (!t) {
+          if (rows.length) {
+            i++;
+            break;
+          }
+          continue;
+        }
+        const m = t.match(/^([^:]+?)\s*:\s*(.+)$/);
+        if (m && m[1].trim().length > 0) {
+          const key = m[1].trim();
+          if (/^tags$/i.test(key)) break;
+          rows.push({ key, value: m[2].trim() });
+        } else {
+          break;
+        }
+      }
+      const rest = lines.slice(i).join('\n').replace(/^\n+/, '').trim();
+      return { rows, rest };
+    }
+
+    /** Attach shared Are.na fields used by the lightbox (description, hashtags → tags, title, alt). */
+    function finishArenaItem(block, base) {
+      const descStr = arenaDescriptionToString(block.description);
+      const { tags: hashTags, body: bodyAfterTags } = extractHashtagsAndBody(block.description);
+      const proj = extractPrimaryProjectUrl(bodyAfterTags);
+      const bodyNoProj = proj ? stripFirstProjectUrl(bodyAfterTags, proj) : bodyAfterTags;
+      const { rows: rawMetaRows, rest: afterMeta } = splitLeadingKeyValueMeta(bodyNoProj);
+      const { tagLabels: lineTags, rest: bodyFinal } = extractStructuredTagsLines(afterMeta);
+
+      const projectRow = rawMetaRows.find(r => /^project$/i.test(r.key));
+      base.arenaProjectName = projectRow ? projectRow.value.trim() : null;
+      base.arenaMetaRowsAll = rawMetaRows.slice();
+      base.arenaMetaRows = rawMetaRows.filter(r => !/^project$/i.test(r.key));
+
+      base.arenaDescriptionRaw = descStr || null;
+      base.arenaBodyMarkdown = bodyFinal;
+      base.arenaProjectUrl = proj ? proj.url : null;
+      base.arenaProjectLabel = proj ? proj.label : null;
+      base.arenaBlockTitle = block.title || '';
+      base.arenaTitleDisplay =
+        (stripImageExtension(block.title || '').trim() ||
+          String(block.title || '').trim() ||
+          base.alt ||
+          `Block ${block.id}`);
+      base.tags = mergeArenaTagList([...hashTags, ...lineTags], block.type);
+      if (block.image && block.image.alt_text) {
+        base.arenaImageAlt = block.image.alt_text;
+      }
+      return base;
+    }
+
+    function assignArenaTiles(items) {
+      items.forEach((item, i) => {
+        item.tile = [i % COLS, Math.floor(i / COLS)];
+      });
+      return items;
+    }
+
+    // ─────────────────────────────────────────────
+    // BUILD THE 5×5 TILE GRID
+    // Initial tile positions (in tile-% units, i.e. % of one tile size):
+    //   col → X: (col - 0) * 100  - 21.6112   (matches source: col0=-21.6, col1=78.4, ...)
+    //   row → Y: (row - 0) * 100  - 15.9333
+    // The -21.6 / -15.9 offsets centre the grid on the viewport
+    // ─────────────────────────────────────────────
+    const X0 = -17.289;  // initial X for col 0 (tile-%; scaled with STEP)
+    const Y0 = -12.7466; // initial Y for row 0 (tile-%)
+
+    const container = document.getElementById('container');
+    const stage     = document.getElementById('stage');
+    const toastEl   = document.getElementById('secret-toast');
+    const radarEl   = document.getElementById('radar');
+
+    // tileEls[col][row] = DOM element
+    const tileEls = [];
+    // tilePos[col][row] = { x, y } in tile-% units
+    const tilePos = [];
+    /** Extra px translate + scale (focus zoom / repel, or project clusters). */
+    let focusLayer = [];
+    let projectLayer = [];
+
+    const itemTileMap = {};
+    const tileItemMap = {};
+
+    let canvasFocusActive = false;
+    /** True while panning to center the detail tile (blocks user pan; still allows programmatic applyOffsetRaw). */
+    let focusSetupPending = false;
+    let canvasFocusCol = null;
+    let canvasFocusRow = null;
+    let projectViewActive = false;
+    let detailAnimTimers = [];
+    let focusPanRafId = null;
+
+    function clearDetailAnimTimers() {
+      detailAnimTimers.forEach(id => clearTimeout(id));
+      detailAnimTimers = [];
+      if (focusPanRafId != null) {
+        cancelAnimationFrame(focusPanRafId);
+        focusPanRafId = null;
+      }
+    }
+
+    function initLayerGrid() {
+      focusLayer = [];
+      projectLayer = [];
+      for (let col = 0; col < COLS; col++) {
+        focusLayer[col] = [];
+        projectLayer[col] = [];
+        for (let row = 0; row < ROWS; row++) {
+          focusLayer[col][row] = { px: 0, py: 0, sc: 1 };
+          projectLayer[col][row] = { px: 0, py: 0, sc: 1 };
+        }
+      }
+    }
+
+    function syncTileTransform(col, row) {
+      const el = tileEls[col] && tileEls[col][row];
+      if (!el || !tilePos[col] || !tilePos[col][row]) return;
+      const { x, y } = tilePos[col][row];
+      const f = focusLayer[col][row] || { px: 0, py: 0, sc: 1 };
+      const useProject = projectViewActive && !canvasFocusActive && !focusSetupPending;
+      const p = useProject ? (projectLayer[col][row] || { px: 0, py: 0, sc: 1 }) : { px: 0, py: 0, sc: 1 };
+      el.style.transform =
+        `translate3d(${x}%, ${y}%, 0) translate3d(${f.px + p.px}px, ${f.py + p.py}px, 0) scale(${f.sc * p.sc})`;
+    }
+
+    function syncAllTiles() {
+      for (let col = 0; col < COLS; col++) {
+        if (!tileEls[col]) continue;
+        for (let row = 0; row < ROWS; row++) {
+          syncTileTransform(col, row);
+        }
+      }
+    }
+
+    function clearGrid() {
+      container.innerHTML = '';
+      for (let col = 0; col < COLS; col++) {
+        tileEls[col] = [];
+        tilePos[col] = [];
+      }
+    }
+
+    function indexItems(items) {
+      Object.keys(itemTileMap).forEach(k => delete itemTileMap[k]);
+      Object.keys(tileItemMap).forEach(k => delete tileItemMap[k]);
+      items.forEach(item => {
+        itemTileMap[item.id] = item.tile;
+        tileItemMap[`${item.tile[0]},${item.tile[1]}`] = item;
+      });
+    }
+
+    function normalizeItem(raw) {
+      const type = raw.type || (raw.hasDesc ? 'project' : 'mood');
+      const fromArena = Boolean(raw.arenaBlockId);
+      const descUrl = raw.descUrl != null
+        ? raw.descUrl
+        : (fromArena ? null : type === 'project' ? `assets/images/${raw.id}/desc.md` : null);
+      const hasDesc = fromArena
+        ? raw.hasDesc !== false
+        : Boolean(descUrl);
+      return {
+        ...raw,
+        type,
+        srcHD: raw.srcHD || raw.src,
+        hasDesc,
+        descUrl
+      };
+    }
+
+    async function loadItems() {
+      if (CONTENT_SOURCE === 'arena' && ARENA_CHANNEL_SLUG) {
+        const blocks = await fetchAllArenaContents(ARENA_CHANNEL_SLUG);
+        const mapped = blocks.map(arenaBlockToItem).filter(Boolean);
+        return mapped.map(normalizeItem);
+      }
+      if (Array.isArray(window.PORTFOLIO_ITEMS) && window.PORTFOLIO_ITEMS.length) {
+        return window.PORTFOLIO_ITEMS.map(normalizeItem);
+      }
+      const res = await fetch('data/items.json');
+      if (!res.ok) throw new Error('items.json request failed');
+      const json = await res.json();
+      return json.map(normalizeItem);
+    }
+
+    function buildGrid(items) {
+      clearGrid();
+      initLayerGrid();
+      indexItems(items);
+      for (let col = 0; col < COLS; col++) {
+        tileEls[col]  = [];
+        tilePos[col] = [];
+        for (let row = 0; row < ROWS; row++) {
+          const x = X0 + col * STEP;
+          const y = Y0 + row * STEP;
+          tilePos[col][row] = { x, y };
+
+          const tile = document.createElement('div');
+          tile.className = 'tile';
+          tile.dataset.col = col;
+          tile.dataset.row = row;
+
+          const item = tileItemMap[`${col},${row}`];
+          if (item) {
+            const el = buildItem(item, col === 0 && row === 0);
+            tile.appendChild(el);
+          }
+
+          container.appendChild(tile);
+          tileEls[col][row] = tile;
+          syncTileTransform(col, row);
+        }
+      }
+    }
+
+    function buildItem(item, eager) {
+      const div = document.createElement('div');
+      const bk = item.blockKind || 'image';
+      div.className = 'item ' + item.type + (item.hasDesc ? ' has-desc' : '');
+      div.dataset.id = item.id;
+      const rawW = Number(item.width);
+      const wPct = (Number.isFinite(rawW) && rawW > 0 ? rawW : 50) * PLANE_ITEM_SIZE_SCALE;
+      div.style.width = `${wPct}%`;
+      const idx = ITEMS.findIndex(i => i.id === item.id);
+      div.style.animationDelay = `${Math.max(0, idx) * 0.06}s`;
+
+      if (bk === 'text') {
+        const prev = document.createElement('div');
+        prev.className = 'item-text-preview';
+        prev.innerHTML = item.textHtml || `<p>${escapeHtml(item.textPlain || '')}</p>`;
+        div.appendChild(prev);
+      } else if (bk === 'audio' && item.mediaUrl) {
+        const aud = document.createElement('audio');
+        aud.controls = true;
+        aud.preload = eager ? 'metadata' : 'none';
+        aud.src = item.mediaUrl;
+        div.appendChild(aud);
+      } else if (bk === 'video' && item.mediaUrl) {
+        const vid = document.createElement('video');
+        vid.controls = true;
+        vid.playsInline = true;
+        vid.preload = eager ? 'metadata' : 'none';
+        vid.src = item.mediaUrl;
+        div.appendChild(vid);
+      } else if (bk === 'embed') {
+        const badge = document.createElement('div');
+        badge.className = 'item-embed-badge';
+        badge.textContent = 'Embedded';
+        div.appendChild(badge);
+      } else if (bk === 'file') {
+        const card = document.createElement('div');
+        card.className = 'item-file-card';
+        card.textContent = (item.alt || 'File').replace(/\.[^/.]+$/, '') || 'Attachment';
+        div.appendChild(card);
+      } else {
+        const img = document.createElement('img');
+        img.alt = item.alt;
+        img.style.aspectRatio = item.aspectRatio;
+        img.loading = eager ? 'eager' : 'lazy';
+        img.decoding = 'async';
+        img.src = item.src;
+        div.appendChild(img);
+      }
+
+      div.addEventListener('click', () => onItemClick(item));
+      function onItemInEnd(e) {
+        if (e.animationName !== 'itemIn') return;
+        div.classList.add('item--shown');
+        div.removeEventListener('animationend', onItemInEnd);
+      }
+      div.addEventListener('animationend', onItemInEnd);
+      if (typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        div.classList.add('item--shown');
+      }
+      return div;
+    }
+
+    function hashStr(s) {
+      let h = 0;
+      for (let i = 0; i < s.length; i++) h = ((h << 5) - h) + s.charCodeAt(i) | 0;
+      return h;
+    }
+
+    function maybeLoadHdForTile(col, row, item) {
+      if (!item || !item.srcHD || item.srcHD === item.src) return;
+      const bk = item.blockKind || 'image';
+      if (bk !== 'image' && bk !== 'gif') return;
+      const tile = tileEls[col] && tileEls[col][row];
+      if (!tile) return;
+      const img = tile.querySelector('img');
+      if (!img) return;
+      const hd = new Image();
+      hd.onload = () => {
+        const swap = () => {
+          if (!img.isConnected) return;
+          requestAnimationFrame(() => {
+            if (!img.isConnected) return;
+            img.src = item.srcHD;
+          });
+        };
+        if (typeof hd.decode === 'function') {
+          hd.decode().then(swap).catch(swap);
+        } else {
+          swap();
+        }
+      };
+      hd.src = item.srcHD;
+    }
+
+    function clearFocusTileClasses() {
+      for (let col = 0; col < COLS; col++) {
+        if (!tileEls[col]) continue;
+        for (let row = 0; row < ROWS; row++) {
+          const el = tileEls[col][row];
+          if (el) el.classList.remove('tile--focus');
+        }
+      }
+    }
+
+    function assignFocusTileClasses(fCol, fRow) {
+      clearFocusTileClasses();
+      const el = tileEls[fCol] && tileEls[fCol][fRow];
+      if (el) el.classList.add('tile--focus');
+    }
+
+    /** Visible media / item box, not the full tile (tile ≈ ⅓ of stage — tile-based caps limited zoom ~3×). */
+    function focusContentBounds(tileEl) {
+      if (!tileEl) return null;
+      const media = tileEl.querySelector('.item img, .item video');
+      if (media) {
+        const r = media.getBoundingClientRect();
+        if (r.width > 1 && r.height > 1) return r;
+      }
+      const itemEl = tileEl.querySelector('.item');
+      if (itemEl) {
+        const r = itemEl.getBoundingClientRect();
+        if (r.width > 1 && r.height > 1) return r;
+      }
+      return tileEl.getBoundingClientRect();
+    }
+
+    function setFocusLayers(fCol, fRow) {
+      const vpW = window.innerWidth;
+      const vpH = window.innerHeight;
+      const vpCx = vpW / 2;
+      const vpCy = vpH / 2;
+      const BASE_FOCUS_SCALE = 8;
+      const maxScaledH = vpH * 0.9;
+      const maxScaledW = vpW * 0.94;
+
+      const focusEl = tileEls[fCol] && tileEls[fCol][fRow];
+      let scF = BASE_FOCUS_SCALE;
+      if (focusEl) {
+        const r0 = focusContentBounds(focusEl);
+        if (r0.height > 1) scF = Math.min(scF, maxScaledH / r0.height);
+        if (r0.width > 1) scF = Math.min(scF, maxScaledW / r0.width);
+        scF = Math.max(1, scF);
+      }
+
+      for (let col = 0; col < COLS; col++) {
+        for (let row = 0; row < ROWS; row++) {
+          const hasItem = !!tileItemMap[`${col},${row}`];
+          const el = tileEls[col][row];
+          if (!el) continue;
+          const r = el.getBoundingClientRect();
+          const cx = r.left + r.width / 2;
+          const cy = r.top + r.height / 2;
+
+          if (col === fCol && row === fRow) {
+            focusLayer[col][row] = {
+              px: vpCx - cx,
+              py: vpCy - cy,
+              sc: scF
+            };
+          } else if (hasItem) {
+            const vx = cx - vpCx;
+            const vy = cy - vpCy;
+            const dist = Math.max(Math.hypot(vx, vy), 10);
+            const k = 64 + 3200 / dist;
+            focusLayer[col][row] = {
+              px: (vx / dist) * k,
+              py: (vy / dist) * k,
+              sc: 0.52
+            };
+          } else {
+            const vx = cx - vpCx;
+            const vy = cy - vpCy;
+            const dist = Math.max(Math.hypot(vx, vy), 10);
+            const k = 48 + 2400 / dist;
+            focusLayer[col][row] = {
+              px: (vx / dist) * k,
+              py: (vy / dist) * k,
+              sc: 0.36
+            };
+          }
+        }
+      }
+    }
+
+    /** Pan = JS rAF (no CSS — avoids cross-screen fly-by). Zoom = CSS; match transform duration. */
+    const FOCUS_PAN_MS = 340;
+    const FOCUS_ZOOM_MS = 340;
+
+    function easeInOutQuad(t) {
+      return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+    }
+
+    function computeCenterPanDelta(col, row) {
+      const el = tileEls[col] && tileEls[col][row];
+      if (!el) return { dTx: 0, dTy: 0 };
+      const r = el.getBoundingClientRect();
+      const cx = r.left + r.width / 2;
+      const cy = r.top + r.height / 2;
+      const vpCx = window.innerWidth / 2;
+      const vpCy = window.innerHeight / 2;
+      return {
+        dTx: pxToTilePct(vpCx - cx),
+        dTy: pxToTilePct(vpCy - cy)
+      };
+    }
+
+    /**
+     * 1) rAF pan with eased fractional applyOffsetRaw (no CSS transition) — avoids interpolating
+     *    wrapped % transforms, which caused tiles to “fly” across the viewport.
+     * 2) Snap rebase, then CSS-ease zoom / repel (tile-animate).
+     */
+    function scheduleFocusPanThenZoom(col, row, dTx, dTy) {
+      clearDetailAnimTimers();
+      canvasFocusCol = col;
+      canvasFocusRow = row;
+
+      function finishZoomPhase() {
+        stage.classList.remove('tile-animate');
+        rebaseTilePosFromOrigin();
+        syncAllTiles();
+        void stage.offsetHeight;
+        stage.classList.add('tile-animate');
+        setFocusLayers(col, row);
+        syncAllTiles();
+        detailAnimTimers.push(setTimeout(() => {
+          stage.classList.remove('tile-animate');
+        }, FOCUS_ZOOM_MS));
+        const it = tileItemMap[`${col},${row}`];
+        if (it) {
+          detailAnimTimers.push(setTimeout(() => {
+            maybeLoadHdForTile(col, row, it);
+          }, FOCUS_ZOOM_MS + 120));
+        }
+      }
+
+      if (Math.abs(dTx) < 0.005 && Math.abs(dTy) < 0.005) {
+        finishZoomPhase();
+        return;
+      }
+
+      stage.classList.remove('tile-animate');
+      const panStart = performance.now();
+      let prevEase = 0;
+
+      function panStep(now) {
+        const u = Math.min(1, (now - panStart) / FOCUS_PAN_MS);
+        const e = easeInOutQuad(u);
+        const de = e - prevEase;
+        prevEase = e;
+        applyOffsetRaw(dTx * de, dTy * de);
+        if (u < 1) {
+          focusPanRafId = requestAnimationFrame(panStep);
+        } else {
+          focusPanRafId = null;
+          finishZoomPhase();
+        }
+      }
+
+      focusPanRafId = requestAnimationFrame(panStep);
+    }
+
+    function exitCanvasFocus() {
+      clearDetailAnimTimers();
+      const was = canvasFocusActive;
+      canvasFocusActive = false;
+      canvasFocusCol = canvasFocusRow = null;
+      stage.classList.remove('canvas-focus-mode');
+      lb.classList.remove('canvas-focus');
+      clearFocusTileClasses();
+      if (!was) {
+        for (let col = 0; col < COLS; col++) {
+          if (!focusLayer[col]) continue;
+          for (let row = 0; row < ROWS; row++) {
+            focusLayer[col][row] = { px: 0, py: 0, sc: 1 };
+          }
+        }
+        syncAllTiles();
+        return;
+      }
+      stage.classList.add('tile-animate');
+      for (let col = 0; col < COLS; col++) {
+        if (!focusLayer[col]) continue;
+        for (let row = 0; row < ROWS; row++) {
+          focusLayer[col][row] = { px: 0, py: 0, sc: 1 };
+        }
+      }
+      syncAllTiles();
+      setTimeout(() => stage.classList.remove('tile-animate'), FOCUS_ZOOM_MS);
+    }
+
+    function switchCanvasFocus(col, row, item) {
+      clearDetailAnimTimers();
+      clearFocusTileClasses();
+      for (let c = 0; c < COLS; c++) {
+        if (!focusLayer[c]) continue;
+        for (let r = 0; r < ROWS; r++) {
+          focusLayer[c][r] = { px: 0, py: 0, sc: 1 };
+        }
+      }
+      stage.classList.remove('tile-animate');
+      syncAllTiles();
+      void stage.offsetHeight;
+      const d = computeCenterPanDelta(col, row);
+      assignFocusTileClasses(col, row);
+      scheduleFocusPanThenZoom(col, row, d.dTx, d.dTy);
+    }
+
+    function applyProjectClusterLayout(opts) {
+      const animate = !(opts && opts.animate === false);
+      const groups = new Map();
+      for (const item of ITEMS) {
+        const name = (item.arenaProjectName || '').trim();
+        if (!name) continue;
+        if (!groups.has(name)) groups.set(name, []);
+        groups.get(name).push(item);
+      }
+      const multi = [...groups.entries()].filter(([, arr]) => arr.length >= 2);
+      for (let col = 0; col < COLS; col++) {
+        if (!projectLayer[col]) continue;
+        for (let row = 0; row < ROWS; row++) {
+          projectLayer[col][row] = { px: 0, py: 0, sc: 1 };
+        }
+      }
+      if (multi.length === 0) {
+        syncAllTiles();
+        return;
+      }
+      if (animate) stage.classList.add('tile-animate');
+      const W = window.innerWidth;
+      const H = window.innerHeight;
+      const cx0 = W / 2;
+      const cy0 = H / 2;
+      const R = Math.min(W, H) * 0.24;
+
+      multi.forEach(([projName, list], idx) => {
+        const theta = (2 * Math.PI * idx) / multi.length - Math.PI / 2;
+        const tcx = cx0 + R * Math.cos(theta);
+        const tcy = cy0 + R * Math.sin(theta);
+        list.forEach((item, j) => {
+          const [c, r] = item.tile;
+          if (c == null || r == null || !tileEls[c] || !tileEls[c][r]) return;
+          const el = tileEls[c][r];
+          const rect = el.getBoundingClientRect();
+          const ix = rect.left + rect.width / 2;
+          const iy = rect.top + rect.height / 2;
+          const h = hashStr(item.id + projName);
+          const ox = ((h % 53) - 26) * 1.35;
+          const oy = (((h >> 4) % 53) - 26) * 1.35;
+          const jx = Math.cos(j * 1.1) * 22;
+          const jy = Math.sin(j * 1.1) * 22;
+          const targetX = tcx + ox + jx;
+          const targetY = tcy + oy + jy;
+          projectLayer[c][r] = {
+            px: (targetX - ix) * 0.9,
+            py: (targetY - iy) * 0.9,
+            sc: 0.84 + (Math.abs(h) % 10) / 250
+          };
+        });
+      });
+      syncAllTiles();
+      if (animate) setTimeout(() => stage.classList.remove('tile-animate'), FOCUS_ZOOM_MS);
+    }
+
+    function clearProjectClusterLayout(opts) {
+      const animate = !(opts && opts.animate === false);
+      if (animate) stage.classList.add('tile-animate');
+      for (let col = 0; col < COLS; col++) {
+        if (!projectLayer[col]) continue;
+        for (let row = 0; row < ROWS; row++) {
+          projectLayer[col][row] = { px: 0, py: 0, sc: 1 };
+        }
+      }
+      syncAllTiles();
+      if (animate) setTimeout(() => stage.classList.remove('tile-animate'), FOCUS_ZOOM_MS);
+    }
+
+    function updateNavViewButtons() {
+      const floatBtn = document.getElementById('nav-view-float');
+      const projBtn = document.getElementById('nav-view-projects');
+      if (floatBtn) {
+        floatBtn.classList.toggle('active', !projectViewActive);
+        floatBtn.setAttribute('aria-pressed', String(!projectViewActive));
+      }
+      if (projBtn) {
+        projBtn.classList.toggle('active', projectViewActive);
+        projBtn.setAttribute('aria-pressed', String(projectViewActive));
+      }
+    }
+
+    function setProjectView(on) {
+      if (on === projectViewActive) return;
+      if (canvasFocusActive) closeLightbox();
+      projectViewActive = on;
+      if (projectViewActive) {
+        stage.classList.add('project-cluster-mode');
+        requestAnimationFrame(() => applyProjectClusterLayout({ animate: true }));
+      } else {
+        stage.classList.remove('project-cluster-mode');
+        clearProjectClusterLayout({ animate: true });
+      }
+      updateNavViewButtons();
+    }
+
+    let toastTimer = null;
+    function showSecretToast(msg) {
+      toastEl.textContent = msg;
+      toastEl.classList.add('show');
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toastEl.classList.remove('show'), 1500);
+    }
+
+    // ─────────────────────────────────────────────
+    // DRAG & PHYSICS
+    // ─────────────────────────────────────────────
+    let isDragging = false;
+    let moved      = false;
+    let lastX = 0, lastY = 0;
+    let vx = 0, vy = 0;
+    let rafId = null;
+    let isReady = false;
+    /** When set, pointer started on .item — defer capture/preventDefault so click can fire. */
+    let pendingItemPointer = null;
+    /** Same for touch: avoid panning before we know it's a drag. */
+    let pendingTouchItem = null;
+
+    // We store the cumulative offset in tile-% units
+    // dx/dy from pointer events need to be converted:
+    // 1 tile = var(--tile) of container = containerPx / 3
+    // so delta_tilePct = (delta_px / containerPx) * 300
+    function containerSize() {
+      // The container is a square; get its rendered width
+      return container.getBoundingClientRect().width;
+    }
+
+    function pxToTilePct(px) {
+      return (px / containerSize()) * 300;
+    }
+
+    function applyOffsetRaw(dTilePctX, dTilePctY) {
+      if (!isReady) return;
+      const spanX = COLS * STEP;
+      const spanY = ROWS * STEP;
+      for (let col = 0; col < COLS; col++) {
+        for (let row = 0; row < ROWS; row++) {
+          let { x, y } = tilePos[col][row];
+          x += dTilePctX;
+          y += dTilePctY;
+
+          const hx = halfSpanX();
+          const hy = halfSpanY();
+          while (x >  hx) x -= spanX;
+          while (x <= -hx) x += spanX;
+
+          while (y >  hy) y -= spanY;
+          while (y <= -hy) y += spanY;
+
+          tilePos[col][row] = { x, y };
+          syncTileTransform(col, row);
+        }
+      }
+      renderRadar();
+    }
+
+    function applyOffset(dTilePctX, dTilePctY) {
+      if (!isReady) return;
+      if (canvasFocusActive || focusSetupPending) return;
+      applyOffsetRaw(dTilePctX, dTilePctY);
+    }
+
+    /**
+     * After a large programmatic pan, per-tile torus wraps can desync the rigid grid
+     * (neighbors appear to “scatter”). Rebuild positions from (0,0) so spacing stays exact.
+     */
+    function rebaseTilePosFromOrigin() {
+      if (!tilePos[0] || tilePos[0][0] == null) return;
+      const spanX = COLS * STEP;
+      const spanY = ROWS * STEP;
+      const hx = halfSpanX();
+      const hy = halfSpanY();
+      const ox = tilePos[0][0].x;
+      const oy = tilePos[0][0].y;
+      for (let col = 0; col < COLS; col++) {
+        for (let row = 0; row < ROWS; row++) {
+          let x = ox + col * STEP;
+          let y = oy + row * STEP;
+          while (x >  hx) x -= spanX;
+          while (x <= -hx) x += spanX;
+          while (y >  hy) y -= spanY;
+          while (y <= -hy) y += spanY;
+          tilePos[col][row] = { x, y };
+        }
+      }
+    }
+
+    function tick() {
+      if (Math.abs(vx) < MIN_VEL && Math.abs(vy) < MIN_VEL) {
+        vx = vy = 0;
+        rafId = null;
+        return;
+      }
+      vx *= FRICTION;
+      vy *= FRICTION;
+      applyOffset(vx, vy);
+      rafId = requestAnimationFrame(tick);
+    }
+
+    // Pointer — avoid preventDefault/capture on .item pointerdown; those suppress click in most browsers.
+    stage.addEventListener('pointerdown', e => {
+      if (!isReady) return;
+      if (e.button !== 0) return;
+      if ((canvasFocusActive || focusSetupPending) && !e.target.closest('.item')) return;
+      const onItem = e.target.closest('.item');
+      if (onItem) {
+        pendingItemPointer = {
+          pointerId: e.pointerId,
+          startX: e.clientX,
+          startY: e.clientY
+        };
+        lastX = e.clientX;
+        lastY = e.clientY;
+        moved = false;
+        vx = vy = 0;
+        if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+        return;
+      }
+      e.preventDefault();
+      isDragging = true;
+      moved      = false;
+      lastX = e.clientX;
+      lastY = e.clientY;
+      vx = vy = 0;
+      if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+      stage.classList.remove('tile-animate');
+      stage.classList.add('grabbing');
+      stage.setPointerCapture(e.pointerId);
+    });
+
+    stage.addEventListener('pointermove', e => {
+      if (!isReady) return;
+      if (pendingItemPointer && pendingItemPointer.pointerId === e.pointerId && !isDragging) {
+        const dx = e.clientX - pendingItemPointer.startX;
+        const dy = e.clientY - pendingItemPointer.startY;
+        if (Math.abs(dx) > 3 || Math.abs(dy) > 3) {
+          e.preventDefault();
+          isDragging = true;
+          moved = true;
+          stage.classList.remove('tile-animate');
+          stage.setPointerCapture(e.pointerId);
+          stage.classList.add('grabbing');
+          pendingItemPointer = null;
+          const ddx = e.clientX - lastX;
+          const ddy = e.clientY - lastY;
+          lastX = e.clientX;
+          lastY = e.clientY;
+          const dtx = pxToTilePct(ddx);
+          const dty = pxToTilePct(ddy);
+          vx = dtx;
+          vy = dty;
+          applyOffset(dtx, dty);
+        }
+        return;
+      }
+      if (!isDragging) return;
+      const dx = e.clientX - lastX;
+      const dy = e.clientY - lastY;
+      lastX = e.clientX;
+      lastY = e.clientY;
+      if (Math.abs(dx) > 2 || Math.abs(dy) > 2) moved = true;
+      const dtx = pxToTilePct(dx);
+      const dty = pxToTilePct(dy);
+      vx = dtx;
+      vy = dty;
+      applyOffset(dtx, dty);
+    });
+
+    stage.addEventListener('pointerup', e => {
+      if (!isReady) return;
+      if (pendingItemPointer && pendingItemPointer.pointerId === e.pointerId) {
+        pendingItemPointer = null;
+        return;
+      }
+      if (!isDragging) return;
+      isDragging = false;
+      stage.classList.remove('grabbing');
+      if (rafId) cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(tick);
+    });
+
+    stage.addEventListener('pointercancel', e => {
+      if (pendingItemPointer && pendingItemPointer.pointerId === e.pointerId) {
+        pendingItemPointer = null;
+      }
+    });
+
+    // Wheel / trackpad
+    stage.addEventListener('wheel', e => {
+      if (!isReady) return;
+      if (canvasFocusActive || focusSetupPending) {
+        e.preventDefault();
+        return;
+      }
+      e.preventDefault();
+      vx = vy = 0;
+      if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+      applyOffset(pxToTilePct(-e.deltaX), pxToTilePct(-e.deltaY));
+    }, { passive: false });
+
+    // Touch (defer pan if gesture began on .item so tap can open detail)
+    let t0x = 0, t0y = 0;
+    stage.addEventListener('touchstart', e => {
+      if (!isReady) return;
+      if ((canvasFocusActive || focusSetupPending) && !e.target.closest('.item')) return;
+      if (e.touches.length !== 1) return;
+      t0x = e.touches[0].clientX;
+      t0y = e.touches[0].clientY;
+      vx = vy = 0;
+      if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+      const onItem = e.target.closest('.item');
+      if (onItem) {
+        pendingTouchItem = { startX: t0x, startY: t0y };
+      } else {
+        pendingTouchItem = null;
+      }
+    }, { passive: true });
+
+    stage.addEventListener('touchmove', e => {
+      if (!isReady) return;
+      if (e.touches.length !== 1) return;
+      if (pendingTouchItem) {
+        const dx = e.touches[0].clientX - pendingTouchItem.startX;
+        const dy = e.touches[0].clientY - pendingTouchItem.startY;
+        if (Math.abs(dx) <= 10 && Math.abs(dy) <= 10) return;
+        pendingTouchItem = null;
+      }
+      e.preventDefault();
+      const dx = e.touches[0].clientX - t0x;
+      const dy = e.touches[0].clientY - t0y;
+      t0x = e.touches[0].clientX;
+      t0y = e.touches[0].clientY;
+      vx = pxToTilePct(dx);
+      vy = pxToTilePct(dy);
+      applyOffset(vx, vy);
+    }, { passive: false });
+
+    stage.addEventListener('touchend', () => {
+      if (!isReady) return;
+      pendingTouchItem = null;
+      if (rafId) cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(tick);
+    }, { passive: true });
+
+    // Arrow keys
+    document.addEventListener('keydown', e => {
+      if (!isReady) return;
+      if (isLightboxOpen()) return;
+      const K = 8;
+      if (e.key === 'ArrowLeft')  applyOffset( K, 0);
+      if (e.key === 'ArrowRight') applyOffset(-K, 0);
+      if (e.key === 'ArrowUp')    applyOffset(0,  K);
+      if (e.key === 'ArrowDown')  applyOffset(0, -K);
+    });
+
+    // ─────────────────────────────────────────────
+    // HIDDEN FEATURES
+    // ─────────────────────────────────────────────
+    const konami = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+    const secretState = {
+      keyBuffer: [],
+      radarOpen: false,
+      nightMode: false
+    };
+
+    function nearestTileItem() {
+      let best = null;
+      let bestDist = Infinity;
+      for (let col = 0; col < COLS; col++) {
+        if (!tilePos[col]) continue;
+        for (let row = 0; row < ROWS; row++) {
+          if (!tilePos[col][row]) continue;
+          const p = tilePos[col][row];
+          const dist = Math.abs(p.x) + Math.abs(p.y);
+          if (dist < bestDist) {
+            bestDist = dist;
+            best = { col, row };
+          }
+        }
+      }
+      if (!best) return null;
+      return tileItemMap[`${best.col},${best.row}`] || null;
+    }
+
+    function renderRadar() {
+      if (!secretState.radarOpen) return;
+      const item = nearestTileItem();
+      const speed = Math.hypot(vx, vy).toFixed(2);
+      radarEl.innerHTML = `
+        <div class="label">Pilot Radar</div>
+        <div>speed: ${speed}</div>
+        <div>focus: ${item ? item.id : 'empty tile'}</div>
+        <div>hint: press "p" to hide</div>
+      `;
+    }
+
+    function toggleRadar() {
+      secretState.radarOpen = !secretState.radarOpen;
+      radarEl.classList.toggle('open', secretState.radarOpen);
+      radarEl.setAttribute('aria-hidden', String(!secretState.radarOpen));
+      renderRadar();
+      showSecretToast(secretState.radarOpen ? 'Pilot radar online' : 'Pilot radar offline');
+    }
+
+    function toggleNightMode() {
+      secretState.nightMode = !secretState.nightMode;
+      document.body.classList.toggle('night-mode', secretState.nightMode);
+      showSecretToast(secretState.nightMode ? 'Night flight enabled' : 'Night flight disabled');
+    }
+
+    document.addEventListener('keydown', e => {
+      if (!isReady) return;
+      if (isLightboxOpen()) return;
+
+      const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+      secretState.keyBuffer.push(key);
+      if (secretState.keyBuffer.length > konami.length) secretState.keyBuffer.shift();
+      if (secretState.keyBuffer.join('|') === konami.join('|')) {
+        toggleNightMode();
+        secretState.keyBuffer = [];
+      }
+
+      if (key === 'p') toggleRadar();
+    });
+
+    // ─────────────────────────────────────────────
+    // LIGHTBOX
+    // ─────────────────────────────────────────────
+    const lb       = document.getElementById('lightbox');
+    const lbBackdrop = document.getElementById('lb-backdrop');
+    const lbMediaMount = document.getElementById('lb-media-mount');
+    const lbPanel  = document.getElementById('lb-panel');
+    const lbPanelClose = document.getElementById('lb-panel-close');
+    const lbArenaSource = document.getElementById('lb-arena-source');
+    const lbProjectLink = document.getElementById('lb-project-link');
+    const lbTags   = document.getElementById('lb-tags');
+    const lbTitle  = document.getElementById('lb-title');
+    const lbMeta   = document.getElementById('lb-meta');
+    const lbBody   = document.getElementById('lb-body');
+    const lbAlt    = document.getElementById('lb-alt');
+
+    const descCache = {};
+
+    function isLightboxOpen() {
+      return lb.classList.contains('open');
+    }
+
+    function parseFrontMatter(raw) {
+      const match = raw.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
+      if (!match) return { attrs: {}, body: raw };
+      const attrs = {};
+      const front = match[1];
+      front.split('\n').forEach(line => {
+        const idx = line.indexOf(':');
+        if (idx === -1) return;
+        const key = line.slice(0, idx).trim();
+        const value = line.slice(idx + 1).trim();
+        attrs[key] = value;
+      });
+      return { attrs, body: match[2] };
+    }
+
+    function metaValueToText(value) {
+      if (!value) return '';
+      if (value.startsWith('[') && value.endsWith(']')) {
+        return value
+          .slice(1, -1)
+          .split(',')
+          .map(v => v.trim())
+          .filter(Boolean)
+          .join(', ');
+      }
+      return value;
+    }
+
+    function pauseLbMedia() {
+      lbMediaMount.querySelectorAll('video, audio').forEach(el => {
+        try { el.pause(); } catch (_) {}
+      });
+    }
+
+    function clearLbMedia() {
+      pauseLbMedia();
+      lbMediaMount.innerHTML = '';
+    }
+
+    function lightboxCtaLabel(preferredLabel) {
+      const l = (preferredLabel || '').trim();
+      if (!l || /^https?:\/\//i.test(l) || l.length > 56) return 'View product';
+      return l;
+    }
+
+    /** One layout for Are.na blocks and local desc.md: title line, body HTML, optional URL button. */
+    function fillLightboxPanel({ title, bodyHtml, externalUrl, ctaLabel, arenaBlockUrl }) {
+      lb.classList.add('lb-panel-minimal');
+      lbTags.innerHTML = '';
+      lbMeta.innerHTML = '';
+      lbAlt.textContent = '';
+      lbAlt.style.display = 'none';
+
+      lbTitle.textContent = title;
+
+      if (lbArenaSource) {
+        if (arenaBlockUrl) {
+          lbArenaSource.href = arenaBlockUrl;
+          lbArenaSource.hidden = false;
+        } else {
+          lbArenaSource.hidden = true;
+        }
+      }
+
+      if (lbProjectLink) lbProjectLink.innerHTML = '';
+      if (lbProjectLink && externalUrl) {
+        const a = document.createElement('a');
+        a.href = externalUrl;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        a.className = 'lb-cta-button';
+        a.textContent = lightboxCtaLabel(ctaLabel);
+        lbProjectLink.appendChild(a);
+      }
+
+      lbBody.innerHTML = bodyHtml || '';
+    }
+
+    function buildArenaPanelBodyHtml(item) {
+      const bk = item.blockKind || 'image';
+      const parts = [];
+      const md = (item.arenaBodyMarkdown || '').trim();
+      if (md) parts.push(renderArenaMarkdown(md));
+      if (bk === 'text' && item.textHtml && item.textHtml.trim()) {
+        if (md) {
+          parts.push('<hr style="border:0;border-top:1px solid rgba(0,0,0,0.1);margin:14px 0">');
+        }
+        parts.push(
+          '<p style="opacity:0.55;font-size:10px;text-transform:uppercase;letter-spacing:0.06em;margin:0 0 8px">Block text</p>',
+          item.textHtml
+        );
+      }
+      return parts.length ? parts.join('') : '';
+    }
+
+    function fillLightboxPanelFromArenaItem(item) {
+      const imageTitle = item.arenaTitleDisplay || item.alt || item.id;
+      const title = item.arenaProjectName
+        ? `${item.arenaProjectName} / ${imageTitle}`
+        : imageTitle;
+      fillLightboxPanel({
+        title,
+        bodyHtml: buildArenaPanelBodyHtml(item),
+        externalUrl: item.arenaProjectUrl || '',
+        ctaLabel: item.arenaProjectLabel,
+        arenaBlockUrl: item.arenaBlockUrl || null
+      });
+    }
+
+    function renderLightboxMedia(item) {
+      if (lb.classList.contains('canvas-focus')) {
+        clearLbMedia();
+        return;
+      }
+      clearLbMedia();
+      const bk = item.blockKind || 'image';
+
+      if (bk === 'text') {
+        const stage = document.createElement('div');
+        stage.className = 'lb-text-stage';
+        stage.innerHTML = item.textHtml || `<p>${escapeHtml(item.textPlain || '')}</p>`;
+        lbMediaMount.appendChild(stage);
+        return;
+      }
+
+      if (bk === 'audio' && item.mediaUrl) {
+        const aud = document.createElement('audio');
+        aud.controls = true;
+        aud.preload = 'metadata';
+        aud.src = item.mediaUrl;
+        lbMediaMount.appendChild(aud);
+        return;
+      }
+
+      if (bk === 'video' && item.mediaUrl) {
+        const vid = document.createElement('video');
+        vid.controls = true;
+        vid.playsInline = true;
+        vid.preload = 'metadata';
+        vid.src = item.mediaUrl;
+        lbMediaMount.appendChild(vid);
+        return;
+      }
+
+      if (bk === 'embed' && item.embedHtml) {
+        lbMediaMount.innerHTML = item.embedHtml;
+        return;
+      }
+
+      if (bk === 'file') {
+        const wrap = document.createElement('div');
+        wrap.className = 'lb-text-stage';
+        if (item.mediaUrl) {
+          const safe = item.mediaUrl.replace(/"/g, '&quot;');
+          wrap.innerHTML = `<p>Attachment</p><p><a href="${safe}" target="_blank" rel="noopener noreferrer">Open file</a></p>`;
+        } else {
+          wrap.innerHTML = '<p>File</p>';
+        }
+        lbMediaMount.appendChild(wrap);
+        return;
+      }
+
+      const img = document.createElement('img');
+      img.alt = item.alt || '';
+      img.src = item.src || '';
+      const ar = Number(item.aspectRatio);
+      if (ar > 0 && Number.isFinite(ar)) {
+        img.style.aspectRatio = String(ar);
+      }
+      lbMediaMount.appendChild(img);
+
+      const canHd = (bk === 'image' || bk === 'gif') && item.src && item.srcHD && item.srcHD !== item.src;
+      if (canHd) {
+        const hd = new Image();
+        hd.onload = () => { img.src = item.srcHD; };
+        hd.src = item.srcHD;
+      }
+    }
+
+    async function populateDetailPanelContents(item) {
+      if (item.descUrl) {
+        const url = item.descUrl;
+        if (!descCache[url]) {
+          try {
+            const res = await fetch(url);
+            descCache[url] = res.ok ? await res.text() : null;
+          } catch {
+            descCache[url] = null;
+          }
+        }
+        const raw = descCache[url];
+        if (raw) {
+          const parsed = parseFrontMatter(raw);
+          const attrs = parsed.attrs;
+          const stripped = parsed.body;
+          const project = (attrs.project || '').trim();
+          const imageTitle = (attrs.title ? attrs.title.trim() : '') || item.id;
+          const title = project ? `${project} / ${imageTitle}` : imageTitle;
+          const linkRaw = attrs.link ? metaValueToText(attrs.link) : '';
+          const bodyHtml = (typeof marked !== 'undefined')
+            ? marked.parse(stripped)
+            : stripped.replace(/\n\n/g, '</p><p>').replace(/^/, '<p>').replace(/$/, '</p>');
+          fillLightboxPanel({
+            title,
+            bodyHtml,
+            externalUrl: linkRaw,
+            ctaLabel: attrs.cta,
+            arenaBlockUrl: null
+          });
+        } else {
+          fillLightboxPanel({
+            title: item.id,
+            bodyHtml: '<p style="opacity:0.4">Description not found.</p>',
+            externalUrl: '',
+            ctaLabel: '',
+            arenaBlockUrl: null
+          });
+        }
+        return;
+      }
+      if (item.arenaBlockId) {
+        fillLightboxPanelFromArenaItem(item);
+        return;
+      }
+      fillLightboxPanel({
+        title: item.id,
+        bodyHtml: '',
+        externalUrl: '',
+        ctaLabel: '',
+        arenaBlockUrl: null
+      });
+    }
+
+    async function onItemClick(item) {
+      if (moved) return;
+
+      if (isLightboxOpen() && item.hasDesc && canvasFocusActive) {
+        const t = itemTileMap[item.id];
+        if (t) {
+          await populateDetailPanelContents(item);
+          switchCanvasFocus(t[0], t[1], item);
+          return;
+        }
+      }
+
+      if (item.hasDesc) {
+        lb.classList.remove('image-only');
+        lb.classList.add('canvas-focus');
+        if (item.descUrl) {
+          fillLightboxPanel({
+            title: item.id,
+            bodyHtml: '<p style="opacity:0.4">Loading…</p>',
+            externalUrl: '',
+            ctaLabel: '',
+            arenaBlockUrl: null
+          });
+        } else {
+          await populateDetailPanelContents(item);
+        }
+      } else {
+        lb.classList.add('image-only');
+        lb.classList.remove('lb-panel-minimal', 'canvas-focus');
+        canvasFocusActive = false;
+        stage.classList.remove('canvas-focus-mode');
+      }
+
+      lb.setAttribute('aria-hidden', 'false');
+      lb.classList.add('open');
+      renderLightboxMedia(item);
+
+      if (item.hasDesc) {
+        const t = itemTileMap[item.id];
+        if (t) {
+          focusSetupPending = true;
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              focusSetupPending = false;
+              canvasFocusActive = true;
+              stage.classList.add('canvas-focus-mode');
+              assignFocusTileClasses(t[0], t[1]);
+              const pan = computeCenterPanDelta(t[0], t[1]);
+              scheduleFocusPanThenZoom(t[0], t[1], pan.dTx, pan.dTy);
+            });
+          });
+        } else {
+          canvasFocusActive = true;
+          stage.classList.add('canvas-focus-mode');
+        }
+        if (item.descUrl) await populateDetailPanelContents(item);
+      }
+    }
+
+    function closeLightbox() {
+      exitCanvasFocus();
+      lb.classList.remove('open');
+      lb.classList.remove('lb-panel-minimal');
+      lb.setAttribute('aria-hidden', 'true');
+      setTimeout(() => { clearLbMedia(); }, 350);
+    }
+
+    lbBackdrop.addEventListener('click', closeLightbox);
+    lbPanelClose.addEventListener('click', e => {
+      e.stopPropagation();
+      closeLightbox();
+    });
+    lbPanel.addEventListener('click', e => e.stopPropagation());
+
+    const lbImageArea = document.getElementById('lb-image-area');
+    lbImageArea.addEventListener('click', e => {
+      if (e.target.closest('video, audio, iframe, .lb-text-stage')) return;
+      e.stopPropagation();
+      closeLightbox();
+    });
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && isLightboxOpen()) closeLightbox();
+    });
+
+    // ─────────────────────────────────────────────
+    // HINT
+    // ─────────────────────────────────────────────
+    const hint = document.getElementById('hint');
+    setTimeout(() => hint.classList.add('gone'), 3500);
+    renderRadar();
+
+    const navViewFloat = document.getElementById('nav-view-float');
+    const navViewProjects = document.getElementById('nav-view-projects');
+    if (navViewFloat) {
+      navViewFloat.addEventListener('click', e => {
+        e.preventDefault();
+        setProjectView(false);
+      });
+    }
+    if (navViewProjects) {
+      navViewProjects.addEventListener('click', e => {
+        e.preventDefault();
+        setProjectView(true);
+      });
+    }
+
+    (async function init() {
+      try {
+        ITEMS = await loadItems();
+        if (CONTENT_SOURCE === 'arena' && ITEMS.length) {
+          setGridDimensionsForArena(ITEMS.length);
+          assignArenaTiles(ITEMS);
+        }
+      } catch (err) {
+        ITEMS = [];
+        showSecretToast(CONTENT_SOURCE === 'arena' ? 'Could not load Are.na channel' : 'Could not load items data');
+        console.error(err);
+      }
+      buildGrid(ITEMS);
+      if (projectViewActive) {
+        requestAnimationFrame(() => applyProjectClusterLayout({ animate: false }));
+      }
+      isReady = true;
+    })();
+
+  })();
+  </script>
+</body>
+</html>
