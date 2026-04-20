@@ -102,7 +102,130 @@
     }
 
     .site-name { font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
-    .nav-links  { display: flex; gap: 24px; }
+
+    /* ─────────────────────────────────────────────
+       INFO — olive + chartreuse (pinned Are.na copy)
+    ───────────────────────────────────────────── */
+    #info-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 60;
+      background: #9C961E;
+      color: #DAFF0B;
+      padding: 72px 24px 48px;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      pointer-events: none;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.28s ease, visibility 0.28s;
+    }
+    #info-overlay.open {
+      pointer-events: auto;
+      opacity: 1;
+      visibility: visible;
+    }
+    .info-overlay-top {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 61;
+      display: flex;
+      justify-content: flex-end;
+      align-items: baseline;
+      padding: 10px 20px 0;
+      pointer-events: none;
+    }
+    .info-overlay-top button {
+      pointer-events: auto;
+    }
+    #info-overlay-close {
+      font-family: var(--mono);
+      font-size: var(--fs);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #DAFF0B;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      margin: 0;
+      transition: opacity 0.15s;
+    }
+    #info-overlay-close:hover { opacity: 0.5; }
+    .info-overlay-title {
+      margin-bottom: 1rem;
+      color: #DAFF0B;
+    }
+    .info-overlay-body {
+      font-family: var(--serif);
+      font-size: 16px;
+      line-height: 1.65;
+      max-width: 40rem;
+      color: #DAFF0B;
+    }
+    .info-overlay-body p { margin-bottom: 1em; }
+    .info-overlay-body p:last-child { margin-bottom: 0; }
+    .info-overlay-lead { font-size: 17px; }
+    .info-overlay-body a {
+      color: #f4ff8a;
+      text-underline-offset: 2px;
+    }
+    .info-overlay-body a:hover {
+      opacity: 0.82;
+    }
+    @media (min-width: 900px) {
+      .info-overlay-inner {
+        margin-left: auto;
+        margin-right: max(24px, 3vw);
+        max-width: min(40rem, 46vw);
+      }
+    }
+
+    /* Plane welcome (pinned Are.na body): behind tiles — Arial XL, internet blue (prior chat). */
+    .plane-welcome-bg {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: visible;
+      background: transparent;
+    }
+    .plane-welcome-bg[hidden] {
+      display: none !important;
+    }
+    .plane-welcome-bg-anchor {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+    }
+    .plane-welcome-bg-track {
+      /* Default until JS locks px at first show (~66vw, stable line breaks). */
+      width: 66vw;
+      max-width: 66vw;
+      min-width: 66vw;
+      box-sizing: border-box;
+      flex-shrink: 0;
+      margin-left: 0;
+      margin-top: 0;
+    }
+    /* ~124px @ ~2048px (6.05vw); 88% lh; −3px @ 124px → −3/124 em — font-size can be locked inline at load */
+    #plane-welcome-bg-text {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: clamp(28px, 6.05vw, 124px);
+      font-weight: 400;
+      line-height: 0.88;
+      letter-spacing: -0.0242em;
+      color: #0000ff;
+      text-align: left;
+      white-space: pre-wrap;
+    }
 
     /* ─────────────────────────────────────────────
        STAGE & TILING CONTAINER
@@ -123,6 +246,7 @@
     */
     #container {
       position: absolute;
+      z-index: 1;
       /* Square: use the viewport's shorter dimension as the reference */
       width:  100vw;
       height: 100vw;
@@ -284,19 +408,10 @@
 
     .item-embed-badge { color: var(--accent); border-color: rgba(5, 0, 255, 0.35); }
 
-    /* Items with a description get a subtle indicator */
+    /* Description dot hidden — detail still opens from tiles with copy */
     .item.has-desc::after {
-      content: '';
-      position: absolute;
-      top: 8px; right: 8px;
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: var(--accent);
-      opacity: 0;
-      transition: opacity 0.2s;
-      pointer-events: none;
+      display: none !important;
     }
-    .item.has-desc:hover::after { opacity: 1; }
 
     /* ─────────────────────────────────────────────
        FADE-IN on load (opacity only — avoids hover/animation restarts flashing)
@@ -459,42 +574,11 @@
     }
 
     #lb-panel-header {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 12px;
       margin-bottom: 10px;
     }
     #lb-panel-header #lb-title {
       margin: 0;
-      flex: 1;
       min-width: 0;
-      padding-right: 0;
-    }
-
-    .lb-panel-tools {
-      display: flex;
-      align-items: flex-start;
-      gap: 2px;
-      flex-shrink: 0;
-    }
-
-    .lb-icon-external {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-family: var(--mono);
-      font-size: 15px;
-      line-height: 1;
-      color: var(--fg);
-      text-decoration: none;
-      opacity: 0.45;
-      padding: 4px 6px;
-      transition: opacity 0.15s, color 0.15s;
-    }
-    .lb-icon-external:hover {
-      opacity: 1;
-      color: var(--accent);
     }
 
     #lb-project-link {
@@ -554,21 +638,6 @@
       background: var(--accent);
       color: #fff;
     }
-
-    #lb-panel-close {
-      flex: 0 0 auto;
-      background: none;
-      border: none;
-      font-family: var(--mono);
-      font-size: 18px;
-      line-height: 1;
-      cursor: pointer;
-      color: var(--fg);
-      padding: 4px 6px;
-      opacity: 0.45;
-      transition: opacity 0.15s;
-    }
-    #lb-panel-close:hover { opacity: 1; }
 
     #lb-panel-inner {
       padding-right: 4px;
@@ -692,6 +761,177 @@
         max-width: 100%;
         max-height: min(52dvh, calc(100dvh - 20px));
       }
+
+      /*
+        Mobile detail (Are.na): top ~66% viewport = image hero, remainder = description / captions.
+        Media uses object-fit: contain inside the fixed band so aspect ratio stays intact.
+      */
+      #lightbox.lb-mobile-detail #lb-row {
+        flex: 1 1 auto;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: flex-start;
+        gap: 10px;
+        padding: 10px 12px 14px;
+        box-sizing: border-box;
+      }
+
+      #lightbox.lb-mobile-detail #lb-image-area {
+        flex: 0 0 auto;
+        width: 100%;
+        min-height: 0;
+        height: 66vh;
+        height: 66dvh;
+        max-height: 66vh;
+        max-height: 66dvh;
+        padding: 6px 4px;
+        box-sizing: border-box;
+      }
+
+      #lightbox.lb-mobile-detail #lb-media-mount {
+        width: 100%;
+        height: 100%;
+        max-height: 100%;
+        min-height: 0;
+      }
+
+      #lightbox.lb-mobile-detail #lb-media-mount > img,
+      #lightbox.lb-mobile-detail #lb-media-mount > video {
+        max-width: 100%;
+        max-height: 100%;
+        width: auto;
+        height: auto;
+        object-fit: contain;
+        object-position: center;
+      }
+
+      #lightbox.lb-mobile-detail #lb-panel {
+        flex: 1 1 auto;
+        min-height: 0;
+        width: 100%;
+        max-width: 100%;
+        max-height: none;
+        align-self: stretch;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+    }
+
+    /*
+      Desktop block detail (canvas-focus): detail column fixed on the right, vertically centered
+      (zoomed tile stays on #stage); mono stack, centered text, light framed panel like mockup.
+    */
+    @media (min-width: 801px) {
+      #lightbox.canvas-focus:not(.lb-mobile-detail) #lb-row {
+        justify-content: flex-end;
+        align-items: stretch;
+        padding: 16px 22px 24px;
+        gap: 0;
+        pointer-events: none;
+      }
+      #lightbox.canvas-focus:not(.lb-mobile-detail) #lb-panel {
+        position: fixed;
+        left: auto;
+        right: max(16px, env(safe-area-inset-right, 0px));
+        top: 50%;
+        bottom: auto;
+        transform: translateY(-50%);
+        width: min(360px, calc(38vw - 8px));
+        max-width: calc(100vw - 32px - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px));
+        max-height: min(78dvh, calc(100vh - 48px));
+        flex: none;
+        align-self: auto;
+        border: 1px solid rgba(5, 0, 255, 0.22);
+        background: rgba(255, 255, 255, 0.94);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+        padding: 20px 22px 22px;
+        overflow-x: hidden;
+        overflow-y: auto;
+        z-index: 201;
+        pointer-events: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+        gap: 0.5rem;
+        box-sizing: border-box;
+      }
+      #lightbox.canvas-focus:not(.lb-mobile-detail) #lb-panel-header {
+        margin-bottom: 0;
+        width: 100%;
+      }
+      #lightbox.canvas-focus:not(.lb-mobile-detail) #lb-panel-inner {
+        padding: 0;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+      }
+      #lightbox.canvas-focus.lb-panel-minimal:not(.lb-mobile-detail) #lb-title {
+        font-family: var(--mono);
+        font-size: var(--fs);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--accent);
+        line-height: 1.35;
+        margin-bottom: 0;
+        width: 100%;
+      }
+      #lightbox.canvas-focus.lb-panel-minimal:not(.lb-mobile-detail) #lb-body {
+        font-family: var(--mono);
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--accent);
+        line-height: 1.45;
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+        text-align: center;
+      }
+      #lightbox.canvas-focus.lb-panel-minimal:not(.lb-mobile-detail) #lb-body p {
+        margin: 0 0 0.5em;
+      }
+      #lightbox.canvas-focus.lb-panel-minimal:not(.lb-mobile-detail) #lb-body p:last-child {
+        margin-bottom: 0;
+      }
+      #lightbox.canvas-focus.lb-panel-minimal:not(.lb-mobile-detail) #lb-body a {
+        color: var(--accent);
+        text-underline-offset: 2px;
+      }
+      #lightbox.canvas-focus:not(.lb-mobile-detail) #lb-project-link {
+        margin-top: 0;
+      }
+      #lightbox.canvas-focus.lb-panel-minimal:not(.lb-mobile-detail) #lb-project-link a.lb-cta-button {
+        display: inline;
+        font-family: var(--mono);
+        font-size: var(--fs);
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+        color: var(--accent);
+        border: none;
+        padding: 0;
+        background: transparent;
+        line-height: 1.35;
+        white-space: nowrap;
+      }
+      #lightbox.canvas-focus.lb-panel-minimal:not(.lb-mobile-detail) #lb-project-link a.lb-cta-button:hover {
+        background: transparent;
+        color: var(--accent);
+        opacity: 0.75;
+      }
+      #lightbox.canvas-focus.lb-panel-minimal:not(.lb-mobile-detail) #lb-project-link a.lb-cta-button::after {
+        content: ' \2197';
+        text-decoration: none;
+      }
     }
 
     /* ─────────────────────────────────────────────
@@ -756,12 +996,8 @@
   <!-- ── NAV ── -->
   <div id="nav">
     <div class="nav-row">
-      <span class="site-name">Research</span>
-      <nav class="nav-links">
-        <a href="#" class="active">Float</a>
-        <a href="#">Grid</a>
-        <a href="#">Table</a>
-      </nav>
+      <span class="site-name" id="site-title">Research</span>
+      <button type="button" id="nav-info" class="site-name" aria-expanded="false" aria-controls="info-overlay">Info</button>
     </div>
     <div class="nav-row-sub" aria-label="Plane layout">
       <button type="button" id="nav-view-float" class="nav-view-btn active" aria-pressed="true">Plane</button>
@@ -771,8 +1007,28 @@
 
   <!-- ── STAGE ── -->
   <div id="stage">
+    <div id="plane-welcome-bg" class="plane-welcome-bg" hidden aria-hidden="true">
+      <div class="plane-welcome-bg-anchor">
+        <div id="plane-welcome-bg-track" class="plane-welcome-bg-track">
+          <p id="plane-welcome-bg-text" class="plane-welcome-bg-text"></p>
+        </div>
+      </div>
+    </div>
     <div id="container">
       <!-- tiles injected by JS -->
+    </div>
+  </div>
+
+  <div id="info-overlay" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="info-overlay-title">
+    <div class="info-overlay-top">
+      <button type="button" id="info-overlay-close" class="site-name" aria-label="Close">Close</button>
+    </div>
+    <div class="info-overlay-inner">
+      <h2 id="info-overlay-title" class="site-name info-overlay-title">About</h2>
+      <div id="info-overlay-body" class="info-overlay-body">
+        <p class="info-overlay-lead">I’m a designer and researcher working at the intersection of material, systems, and the stories we tell with them. This site is a living scrapbook of projects, experiments, and references.</p>
+        <p class="info-overlay-lead">Float is an open canvas: drag to wander, click a piece to focus. More soon — for now, thanks for stopping by.</p>
+      </div>
     </div>
   </div>
 
@@ -786,10 +1042,6 @@
       <aside id="lb-panel" aria-label="Project details">
         <div id="lb-panel-header">
           <h2 id="lb-title"></h2>
-          <div class="lb-panel-tools">
-            <a id="lb-arena-source" class="lb-icon-external" href="#" target="_blank" rel="noopener noreferrer" hidden aria-label="Open this block on Are.na"><span aria-hidden="true">↗</span></a>
-            <button type="button" id="lb-panel-close" aria-label="Close details">×</button>
-          </div>
         </div>
         <div id="lb-panel-inner">
           <div id="lb-tags"></div>
@@ -853,6 +1105,8 @@
     // DATA — see CONTENT_SOURCE: Are.na channel, PORTFOLIO_ITEMS, or data/items.json
     // ─────────────────────────────────────────────
     let ITEMS = [];
+    /** When loading Are.na, the Text block used for site title / Info / plane welcome (excluded from tiles). */
+    let lastArenaSiteMetaBlock = null;
 
     async function fetchAllArenaContents(slug) {
       const out = [];
@@ -870,6 +1124,43 @@
         if (page > 30) break;
       }
       return out;
+    }
+
+    /**
+     * Best-quality URL from an Are.na `image` object: top-level `src` is usually the original
+     * on CloudFront; fall back to `large` → `medium` → `small`.
+     */
+    function arenaImageMaxQualityUrl(im) {
+      if (!im || typeof im !== 'object') return '';
+      const top = im.src && String(im.src).trim();
+      if (top) return top;
+      return (
+        (im.large && im.large.src) ||
+        (im.medium && im.medium.src) ||
+        (im.small && im.small.src) ||
+        ''
+      );
+    }
+
+    /** Lighter derivatives for plane tiles — keeps pan smooth on small screens. */
+    function arenaImagePreviewUrl(im) {
+      if (!im || typeof im !== 'object') return '';
+      return (
+        (im.medium && im.medium.src) ||
+        (im.small && im.small.src) ||
+        (im.large && im.large.src) ||
+        (im.src && String(im.src).trim()) ||
+        ''
+      );
+    }
+
+    /** Narrow viewport or touch-primary: preview tiles + full lightbox detail (no canvas zoom). */
+    function isMobilePortfolioLayout() {
+      if (typeof matchMedia !== 'function') return false;
+      return (
+        matchMedia('(max-width: 768px)').matches ||
+        matchMedia('(hover: none) and (pointer: coarse)').matches
+      );
     }
 
     /** Map Are.na API block → site item (before normalizeItem). Returns null to skip unsupported rows. */
@@ -907,8 +1198,11 @@
         const im = block.image;
         const isGif = (im.content_type || '').toLowerCase() === 'image/gif';
         base.blockKind = isGif ? 'gif' : 'image';
-        base.src = (im.medium && im.medium.src) || (im.small && im.small.src) || im.src;
-        base.srcHD = (im.large && im.large.src) || im.src;
+        const best = arenaImageMaxQualityUrl(im);
+        const prev = arenaImagePreviewUrl(im);
+        const useTilePreview = isMobilePortfolioLayout() && prev;
+        base.src = useTilePreview ? prev : best;
+        base.srcHD = best;
         base.aspectRatio = im.aspect_ratio || (im.width && im.height ? im.width / im.height : 1);
         base.arenaImageAlt = im.alt_text || null;
         base.alt = im.alt_text || stripImageExtension(block.title || '') || label;
@@ -918,11 +1212,53 @@
         return finishArenaItem(block, base);
       }
 
-      if (block.type === 'Text' && block.content) {
+      if (block.type === 'Text') {
         base.blockKind = 'text';
         base.aspectRatio = 1.1;
-        base.textPlain = block.content.plain || '';
-        base.textHtml = block.content.html || '';
+        const c = block.content;
+        let plain = '';
+        let html = '';
+        if (typeof c === 'string' && c.trim()) {
+          plain = c.trim();
+          html = `<p>${escapeHtml(plain)}</p>`;
+        } else if (c && typeof c === 'object') {
+          plain = (c.plain != null && String(c.plain)) || '';
+          html = (c.html != null && String(c.html)) || '';
+          const md = (c.markdown != null && String(c.markdown).trim()) || '';
+          if (!plain.trim() && !html.trim() && md) {
+            if (typeof marked !== 'undefined' && typeof marked.parse === 'function') {
+              try {
+                html = marked.parse(md);
+              } catch (_) {
+                html = `<p>${escapeHtml(md)}</p>`;
+              }
+            } else {
+              plain = md;
+              html = `<p>${escapeHtml(md)}</p>`;
+            }
+          }
+        }
+        if (!plain.trim() && !html.trim()) {
+          const desc = arenaDescriptionToString(block.description).trim();
+          if (desc) {
+            if (typeof marked !== 'undefined' && typeof marked.parse === 'function') {
+              try {
+                html = marked.parse(desc);
+              } catch (_) {
+                html = `<p>${escapeHtml(desc)}</p>`;
+              }
+            } else {
+              plain = desc;
+              html = `<p>${escapeHtml(desc)}</p>`;
+            }
+          }
+        }
+        if (!plain.trim() && !html.trim()) {
+          plain = (block.title || '').trim() || `Text ${block.id}`;
+          html = `<p>${escapeHtml(plain)}</p>`;
+        }
+        base.textPlain = plain;
+        base.textHtml = html;
         return finishArenaItem(block, base);
       }
 
@@ -959,10 +1295,13 @@
       }
 
       if (block.type === 'Link') {
-        if (block.image && block.image.src) {
+        const linkBest = block.image ? arenaImageMaxQualityUrl(block.image) : '';
+        const linkPrev = block.image ? arenaImagePreviewUrl(block.image) : '';
+        if (linkBest) {
           base.blockKind = 'image';
-          base.src = (block.image.medium && block.image.medium.src) || (block.image.small && block.image.small.src) || block.image.src;
-          base.srcHD = (block.image.large && block.image.large.src) || block.image.src;
+          const useTilePreview = isMobilePortfolioLayout() && linkPrev;
+          base.src = useTilePreview ? linkPrev : linkBest;
+          base.srcHD = linkBest;
           base.aspectRatio = block.image.aspect_ratio || 1;
           if (block.image.alt_text) {
             base.arenaImageAlt = block.image.alt_text;
@@ -1214,6 +1553,139 @@
       return base;
     }
 
+    function blockLooksPinnedForIntro(block) {
+      return Boolean(block && block.connection && block.connection.pinned);
+    }
+
+    /** True if this Text block has anything we can show or use for site meta (API shapes vary). */
+    function arenaTextBlockHasBody(block) {
+      if (!block || block.type !== 'Text') return false;
+      const c = block.content;
+      if (typeof c === 'string' && c.trim()) return true;
+      if (c && typeof c === 'object') {
+        if (String(c.plain || '').trim()) return true;
+        if (String(c.html || '').trim()) return true;
+        if (String(c.markdown || '').trim()) return true;
+      }
+      if (arenaDescriptionToString(block.description).trim()) return true;
+      if (String(block.title || '').trim()) return true;
+      return false;
+    }
+
+    /** Pinned Text first; else first Text with body — site chrome + excluded from the plane grid. */
+    function extractPinnedTextSiteMetaBlock(blocks) {
+      if (!Array.isArray(blocks)) return null;
+      const pinned = blocks.find(b => b.type === 'Text' && blockLooksPinnedForIntro(b) && arenaTextBlockHasBody(b));
+      if (pinned) return pinned;
+      const firstText = blocks.find(b => b.type === 'Text' && arenaTextBlockHasBody(b));
+      return firstText || null;
+    }
+
+    function resetPlaneWelcomeLayoutLock() {
+      const track = document.getElementById('plane-welcome-bg-track');
+      const text = document.getElementById('plane-welcome-bg-text');
+      if (track) {
+        delete track.dataset.planeWelcomeLocked;
+        track.style.width = '';
+        track.style.minWidth = '';
+        track.style.maxWidth = '';
+      }
+      if (text) text.style.fontSize = '';
+    }
+
+    /** One-time snapshot: ~66% viewport width + clamp() font at that width so copy does not reflow on resize/parallax. */
+    function lockPlaneWelcomeLayoutOnce() {
+      const wrap = document.getElementById('plane-welcome-bg');
+      const track = document.getElementById('plane-welcome-bg-track');
+      const text = document.getElementById('plane-welcome-bg-text');
+      if (!wrap || !track || !text || wrap.hidden || track.dataset.planeWelcomeLocked === '1') return;
+      const w = Math.round(window.innerWidth * 0.66);
+      track.style.width = `${w}px`;
+      track.style.minWidth = `${w}px`;
+      track.style.maxWidth = `${w}px`;
+      const fs = Math.min(124, Math.max(28, window.innerWidth * 0.0605));
+      text.style.fontSize = `${fs}px`;
+      track.dataset.planeWelcomeLocked = '1';
+    }
+
+    function applyPlaneWelcomeFromMetaBlock(block) {
+      const wrap = document.getElementById('plane-welcome-bg');
+      const line = document.getElementById('plane-welcome-bg-text');
+      const track = document.getElementById('plane-welcome-bg-track');
+      if (!wrap || !line) return;
+      const plain = block && block.content && block.content.plain
+        ? String(block.content.plain).trim()
+        : '';
+      if (plain) {
+        resetPlaneWelcomeLayoutLock();
+        line.textContent = plain;
+        wrap.hidden = false;
+        wrap.setAttribute('aria-hidden', 'false');
+        if (track) {
+          track.style.marginLeft = '0px';
+          track.style.marginTop = '0px';
+        }
+        requestAnimationFrame(() => {
+          requestAnimationFrame(lockPlaneWelcomeLayoutOnce);
+        });
+      } else {
+        line.textContent = '';
+        wrap.hidden = true;
+        wrap.setAttribute('aria-hidden', 'true');
+        resetPlaneWelcomeLayoutLock();
+      }
+    }
+
+    function removePlaneWelcomeBg() {
+      const wrap = document.getElementById('plane-welcome-bg');
+      if (!wrap) return;
+      wrap.hidden = true;
+      wrap.setAttribute('aria-hidden', 'true');
+      resetPlaneWelcomeLayoutLock();
+    }
+
+    function applyArenaSiteMetaFromPinnedBlock(block) {
+      if (!block || block.type !== 'Text') return;
+      const siteTitleEl = document.getElementById('site-title');
+      const titleEl = document.getElementById('info-overlay-title');
+      const bodyEl = document.getElementById('info-overlay-body');
+      const t = (block.title || '').trim();
+      if (t) {
+        if (siteTitleEl) siteTitleEl.textContent = t;
+        if (titleEl) titleEl.textContent = t;
+      }
+      const { body: bodyAfterTags } = extractHashtagsAndBody(block.description);
+      const mdSource = (bodyAfterTags || arenaDescriptionToString(block.description) || '').trim();
+      let bodyHtml = '';
+      if (mdSource) {
+        const { rest } = splitLeadingKeyValueMeta(mdSource);
+        const { rest: bodyFinal } = extractStructuredTagsLines(rest);
+        bodyHtml = renderArenaMarkdown((bodyFinal || rest || mdSource).trim());
+      }
+      const plain = block.content && block.content.plain ? String(block.content.plain).trim() : '';
+      if (!bodyHtml && plain) {
+        bodyHtml = typeof marked !== 'undefined'
+          ? marked.parse(plain)
+          : `<p>${escapeHtml(plain).replace(/\n/g, '<br>')}</p>`;
+      }
+      if (bodyEl) {
+        bodyEl.innerHTML = bodyHtml
+          || '<p class="info-overlay-lead">Add copy on your intro Text block (description or body) on Are.na.</p>';
+      }
+      applyPlaneWelcomeFromMetaBlock(block);
+    }
+
+    /** In-place Fisher–Yates shuffle (uniform random order). */
+    function shuffleArrayInPlace(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = (Math.random() * (i + 1)) | 0;
+        const t = arr[i];
+        arr[i] = arr[j];
+        arr[j] = t;
+      }
+      return arr;
+    }
+
     function assignArenaTiles(items) {
       items.forEach((item, i) => {
         item.tile = [i % COLS, Math.floor(i / COLS)];
@@ -1298,6 +1770,27 @@
       }
     }
 
+    /**
+     * Welcome text drift vs plane (same px scale as pan: tile-% / 300 * container width).
+     * 0.4 ≈ 2.5× slower than tiles; use ~0.33–0.5 for 3×–2× slower.
+     */
+    const PLANE_WELCOME_REL_SPEED = 0.4;
+    /** Unwrapped pan in tile-% (grid wraps; this does not). */
+    let planeWelcomeParallaxUnwrappedX = 0;
+    let planeWelcomeParallaxUnwrappedY = 0;
+
+    function syncPlaneWelcomeParallax() {
+      const track = document.getElementById('plane-welcome-bg-track');
+      const wrap = document.getElementById('plane-welcome-bg');
+      if (!track || !wrap || wrap.hidden) return;
+      if (canvasFocusActive || focusSetupPending) return;
+      const W = containerSize();
+      const pxPlaneX = (planeWelcomeParallaxUnwrappedX / 300) * W;
+      const pxPlaneY = (planeWelcomeParallaxUnwrappedY / 300) * W;
+      track.style.marginLeft = `${pxPlaneX * PLANE_WELCOME_REL_SPEED}px`;
+      track.style.marginTop = `${pxPlaneY * PLANE_WELCOME_REL_SPEED}px`;
+    }
+
     function clearGrid() {
       container.innerHTML = '';
       for (let col = 0; col < COLS; col++) {
@@ -1334,9 +1827,15 @@
     }
 
     async function loadItems() {
+      lastArenaSiteMetaBlock = null;
       if (CONTENT_SOURCE === 'arena' && ARENA_CHANNEL_SLUG) {
         const blocks = await fetchAllArenaContents(ARENA_CHANNEL_SLUG);
-        const mapped = blocks.map(arenaBlockToItem).filter(Boolean);
+        lastArenaSiteMetaBlock = extractPinnedTextSiteMetaBlock(blocks);
+        const skipId = lastArenaSiteMetaBlock ? lastArenaSiteMetaBlock.id : null;
+        const mapped = blocks
+          .filter(b => skipId == null || b.id !== skipId)
+          .map(arenaBlockToItem)
+          .filter(Boolean);
         return mapped.map(normalizeItem);
       }
       if (Array.isArray(window.PORTFOLIO_ITEMS) && window.PORTFOLIO_ITEMS.length) {
@@ -1350,6 +1849,9 @@
 
     function buildGrid(items) {
       clearGrid();
+      resetPlaneWelcomeLayoutLock();
+      planeWelcomeParallaxUnwrappedX = 0;
+      planeWelcomeParallaxUnwrappedY = 0;
       initLayerGrid();
       indexItems(items);
       for (let col = 0; col < COLS; col++) {
@@ -1646,6 +2148,7 @@
       canvasFocusCol = canvasFocusRow = null;
       stage.classList.remove('canvas-focus-mode');
       lb.classList.remove('canvas-focus');
+      lb.classList.remove('lb-mobile-detail');
       clearFocusTileClasses();
       if (!was) {
         for (let col = 0; col < COLS; col++) {
@@ -1818,6 +2321,11 @@
 
     function applyOffsetRaw(dTilePctX, dTilePctY) {
       if (!isReady) return;
+      const pwWrap = document.getElementById('plane-welcome-bg');
+      if (pwWrap && !pwWrap.hidden) {
+        planeWelcomeParallaxUnwrappedX += dTilePctX;
+        planeWelcomeParallaxUnwrappedY += dTilePctY;
+      }
       const spanX = COLS * STEP;
       const spanY = ROWS * STEP;
       for (let col = 0; col < COLS; col++) {
@@ -1839,6 +2347,7 @@
         }
       }
       renderRadar();
+      syncPlaneWelcomeParallax();
     }
 
     function applyOffset(dTilePctX, dTilePctY) {
@@ -2033,6 +2542,7 @@
     document.addEventListener('keydown', e => {
       if (!isReady) return;
       if (isLightboxOpen()) return;
+      if (isInfoOverlayOpen()) return;
       const K = 8;
       if (e.key === 'ArrowLeft')  applyOffset( K, 0);
       if (e.key === 'ArrowRight') applyOffset(-K, 0);
@@ -2098,6 +2608,7 @@
     document.addEventListener('keydown', e => {
       if (!isReady) return;
       if (isLightboxOpen()) return;
+      if (isInfoOverlayOpen()) return;
 
       const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
       secretState.keyBuffer.push(key);
@@ -2117,14 +2628,57 @@
     const lbBackdrop = document.getElementById('lb-backdrop');
     const lbMediaMount = document.getElementById('lb-media-mount');
     const lbPanel  = document.getElementById('lb-panel');
-    const lbPanelClose = document.getElementById('lb-panel-close');
-    const lbArenaSource = document.getElementById('lb-arena-source');
     const lbProjectLink = document.getElementById('lb-project-link');
     const lbTags   = document.getElementById('lb-tags');
     const lbTitle  = document.getElementById('lb-title');
     const lbMeta   = document.getElementById('lb-meta');
     const lbBody   = document.getElementById('lb-body');
     const lbAlt    = document.getElementById('lb-alt');
+
+    const infoOverlay = document.getElementById('info-overlay');
+    const navInfo = document.getElementById('nav-info');
+    const infoOverlayClose = document.getElementById('info-overlay-close');
+
+    function isInfoOverlayOpen() {
+      return Boolean(infoOverlay && infoOverlay.classList.contains('open'));
+    }
+
+    function openInfo() {
+      if (!infoOverlay) return;
+      infoOverlay.classList.add('open');
+      infoOverlay.setAttribute('aria-hidden', 'false');
+      if (navInfo) navInfo.setAttribute('aria-expanded', 'true');
+    }
+
+    function closeInfo() {
+      if (!infoOverlay) return;
+      infoOverlay.classList.remove('open');
+      infoOverlay.setAttribute('aria-hidden', 'true');
+      if (navInfo) navInfo.setAttribute('aria-expanded', 'false');
+    }
+
+    function toggleInfo() {
+      if (isInfoOverlayOpen()) closeInfo();
+      else openInfo();
+    }
+
+    if (navInfo) {
+      navInfo.addEventListener('click', e => {
+        e.preventDefault();
+        toggleInfo();
+      });
+    }
+    if (infoOverlayClose) {
+      infoOverlayClose.addEventListener('click', e => {
+        e.preventDefault();
+        closeInfo();
+      });
+    }
+    if (infoOverlay) {
+      infoOverlay.addEventListener('click', e => {
+        if (e.target === infoOverlay) closeInfo();
+      });
+    }
 
     const descCache = {};
 
@@ -2178,7 +2732,7 @@
     }
 
     /** One layout for Are.na blocks and local desc.md: title line, body HTML, optional URL button. */
-    function fillLightboxPanel({ title, bodyHtml, externalUrl, ctaLabel, arenaBlockUrl }) {
+    function fillLightboxPanel({ title, bodyHtml, externalUrl, ctaLabel }) {
       lb.classList.add('lb-panel-minimal');
       lbTags.innerHTML = '';
       lbMeta.innerHTML = '';
@@ -2186,15 +2740,6 @@
       lbAlt.style.display = 'none';
 
       lbTitle.textContent = title;
-
-      if (lbArenaSource) {
-        if (arenaBlockUrl) {
-          lbArenaSource.href = arenaBlockUrl;
-          lbArenaSource.hidden = false;
-        } else {
-          lbArenaSource.hidden = true;
-        }
-      }
 
       if (lbProjectLink) lbProjectLink.innerHTML = '';
       if (lbProjectLink && externalUrl) {
@@ -2236,8 +2781,7 @@
         title,
         bodyHtml: buildArenaPanelBodyHtml(item),
         externalUrl: item.arenaProjectUrl || '',
-        ctaLabel: item.arenaProjectLabel,
-        arenaBlockUrl: item.arenaBlockUrl || null
+        ctaLabel: item.arenaProjectLabel
       });
     }
 
@@ -2296,19 +2840,13 @@
 
       const img = document.createElement('img');
       img.alt = item.alt || '';
-      img.src = item.src || '';
+      const hi = (item.srcHD && String(item.srcHD).trim()) || item.src || '';
+      img.src = hi;
       const ar = Number(item.aspectRatio);
       if (ar > 0 && Number.isFinite(ar)) {
         img.style.aspectRatio = String(ar);
       }
       lbMediaMount.appendChild(img);
-
-      const canHd = (bk === 'image' || bk === 'gif') && item.src && item.srcHD && item.srcHD !== item.src;
-      if (canHd) {
-        const hd = new Image();
-        hd.onload = () => { img.src = item.srcHD; };
-        hd.src = item.srcHD;
-      }
     }
 
     async function populateDetailPanelContents(item) {
@@ -2338,16 +2876,14 @@
             title,
             bodyHtml,
             externalUrl: linkRaw,
-            ctaLabel: attrs.cta,
-            arenaBlockUrl: null
+            ctaLabel: attrs.cta
           });
         } else {
           fillLightboxPanel({
             title: item.id,
             bodyHtml: '<p style="opacity:0.4">Description not found.</p>',
             externalUrl: '',
-            ctaLabel: '',
-            arenaBlockUrl: null
+            ctaLabel: ''
           });
         }
         return;
@@ -2360,13 +2896,19 @@
         title: item.id,
         bodyHtml: '',
         externalUrl: '',
-        ctaLabel: '',
-        arenaBlockUrl: null
+        ctaLabel: ''
       });
     }
 
     async function onItemClick(item) {
       if (moved) return;
+      removePlaneWelcomeBg();
+
+      if (isLightboxOpen() && item.hasDesc && isMobilePortfolioLayout()) {
+        await populateDetailPanelContents(item);
+        renderLightboxMedia(item);
+        return;
+      }
 
       if (isLightboxOpen() && item.hasDesc && canvasFocusActive) {
         const t = itemTileMap[item.id];
@@ -2379,21 +2921,26 @@
 
       if (item.hasDesc) {
         lb.classList.remove('image-only');
-        lb.classList.add('canvas-focus');
+        if (isMobilePortfolioLayout()) {
+          lb.classList.remove('canvas-focus');
+          lb.classList.add('lb-mobile-detail');
+        } else {
+          lb.classList.remove('lb-mobile-detail');
+          lb.classList.add('canvas-focus');
+        }
         if (item.descUrl) {
           fillLightboxPanel({
             title: item.id,
             bodyHtml: '<p style="opacity:0.4">Loading…</p>',
             externalUrl: '',
-            ctaLabel: '',
-            arenaBlockUrl: null
+            ctaLabel: ''
           });
         } else {
           await populateDetailPanelContents(item);
         }
       } else {
         lb.classList.add('image-only');
-        lb.classList.remove('lb-panel-minimal', 'canvas-focus');
+        lb.classList.remove('lb-panel-minimal', 'canvas-focus', 'lb-mobile-detail');
         canvasFocusActive = false;
         stage.classList.remove('canvas-focus-mode');
       }
@@ -2403,22 +2950,26 @@
       renderLightboxMedia(item);
 
       if (item.hasDesc) {
-        const t = itemTileMap[item.id];
-        if (t) {
-          focusSetupPending = true;
-          requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-              focusSetupPending = false;
-              canvasFocusActive = true;
-              stage.classList.add('canvas-focus-mode');
-              assignFocusTileClasses(t[0], t[1]);
-              const pan = computeCenterPanDelta(t[0], t[1]);
-              scheduleFocusPanThenZoom(t[0], t[1], pan.dTx, pan.dTy);
-            });
-          });
+        if (isMobilePortfolioLayout()) {
+          canvasFocusActive = false;
         } else {
-          canvasFocusActive = true;
-          stage.classList.add('canvas-focus-mode');
+          const t = itemTileMap[item.id];
+          if (t) {
+            focusSetupPending = true;
+            requestAnimationFrame(() => {
+              requestAnimationFrame(() => {
+                focusSetupPending = false;
+                canvasFocusActive = true;
+                stage.classList.add('canvas-focus-mode');
+                assignFocusTileClasses(t[0], t[1]);
+                const pan = computeCenterPanDelta(t[0], t[1]);
+                scheduleFocusPanThenZoom(t[0], t[1], pan.dTx, pan.dTy);
+              });
+            });
+          } else {
+            canvasFocusActive = true;
+            stage.classList.add('canvas-focus-mode');
+          }
         }
         if (item.descUrl) await populateDetailPanelContents(item);
       }
@@ -2433,10 +2984,6 @@
     }
 
     lbBackdrop.addEventListener('click', closeLightbox);
-    lbPanelClose.addEventListener('click', e => {
-      e.stopPropagation();
-      closeLightbox();
-    });
     lbPanel.addEventListener('click', e => e.stopPropagation());
 
     const lbImageArea = document.getElementById('lb-image-area');
@@ -2447,7 +2994,13 @@
     });
 
     document.addEventListener('keydown', e => {
-      if (e.key === 'Escape' && isLightboxOpen()) closeLightbox();
+      if (e.key !== 'Escape') return;
+      if (isInfoOverlayOpen()) {
+        e.preventDefault();
+        closeInfo();
+        return;
+      }
+      if (isLightboxOpen()) closeLightbox();
     });
 
     // ─────────────────────────────────────────────
@@ -2476,6 +3029,9 @@
       try {
         ITEMS = await loadItems();
         if (CONTENT_SOURCE === 'arena' && ITEMS.length) {
+          if (ITEMS.length > 1) {
+            shuffleArrayInPlace(ITEMS);
+          }
           setGridDimensionsForArena(ITEMS.length);
           assignArenaTiles(ITEMS);
         }
@@ -2485,6 +3041,10 @@
         console.error(err);
       }
       buildGrid(ITEMS);
+      if (lastArenaSiteMetaBlock) {
+        applyArenaSiteMetaFromPinnedBlock(lastArenaSiteMetaBlock);
+      }
+      syncPlaneWelcomeParallax();
       if (projectViewActive) {
         requestAnimationFrame(() => applyProjectClusterLayout({ animate: false }));
       }
