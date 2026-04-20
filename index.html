@@ -327,9 +327,46 @@
       animation: itemIn 0.5s ease forwards;
     }
 
-    #stage.canvas-focus-mode .tile.tile--focus .item img {
+    #stage.canvas-focus-mode .tile.tile--focus .item img,
+    #stage.canvas-focus-mode .tile.tile--focus .item-mockup svg {
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
+    }
+
+    .item-mockup {
+      width: 100%;
+      max-width: 100%;
+      max-height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+    .item-mockup svg {
+      display: block;
+      width: auto;
+      height: auto;
+      max-width: 100%;
+      max-height: 100%;
+    }
+
+    #lb-media-mount .lb-mockup-wrap {
+      max-width: 100%;
+      max-height: min(calc(100dvh - 120px), calc(100vh - 120px));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    #lightbox.open #lb-media-mount .lb-mockup-wrap {
+      opacity: 1;
+    }
+    #lb-media-mount .lb-mockup-wrap svg {
+      max-width: 100%;
+      max-height: min(calc(100dvh - 120px), calc(100vh - 120px));
+      width: auto;
+      height: auto;
     }
 
     .item img {
@@ -1058,6 +1095,7 @@
   <div id="secret-toast" aria-live="polite"></div>
   <div id="radar" aria-hidden="true"></div>
 
+  <script src="js/device-mockup-frames.js"></script>
   <script>
   (() => {
     'use strict';
@@ -1522,6 +1560,41 @@
       return { rows, rest };
     }
 
+    /**
+     * Figma @1x / @2x / @3x export sizes (device-mockup-frames.js). Tight tolerance only — default is no frame.
+     */
+    function inferMockupFrameFromDimensions(w, h) {
+      if (!w || !h || w < 8 || h < 8) return null;
+      const tol = (cw, ch) => {
+        const tw = Math.max(cw * 0.04, 24);
+        const th = Math.max(ch * 0.04, 24);
+        return Math.abs(w - cw) <= tw && Math.abs(h - ch) <= th;
+      };
+      const phone = [[440, 956], [880, 1912], [1320, 2868]];
+      for (let i = 0; i < phone.length; i++) {
+        if (tol(phone[i][0], phone[i][1])) return 'phone';
+      }
+      const tablet = [[1264, 948], [2528, 1896], [3792, 2844]];
+      for (let i = 0; i < tablet.length; i++) {
+        if (tol(tablet[i][0], tablet[i][1])) return 'tablet';
+      }
+      const browser = [[1400, 900], [2800, 1800], [4200, 2700]];
+      for (let i = 0; i < browser.length; i++) {
+        if (tol(browser[i][0], browser[i][1])) return 'browser';
+      }
+      return null;
+    }
+
+    function mockupUrlBarLabel(item) {
+      const u = item && item.arenaProjectUrl;
+      if (u && typeof u === 'string') {
+        try {
+          return new URL(u).hostname.replace(/^www\./, '');
+        } catch (_) {}
+      }
+      return 'site';
+    }
+
     /** Attach shared Are.na fields used by the lightbox (description, hashtags → tags, title, alt). */
     function finishArenaItem(block, base) {
       const descStr = arenaDescriptionToString(block.description);
@@ -1534,7 +1607,31 @@
       const projectRow = rawMetaRows.find(r => /^project$/i.test(r.key));
       base.arenaProjectName = projectRow ? projectRow.value.trim() : null;
       base.arenaMetaRowsAll = rawMetaRows.slice();
-      base.arenaMetaRows = rawMetaRows.filter(r => !/^project$/i.test(r.key));
+      base.arenaMetaRows = rawMetaRows.filter(r => !/^project$/i.test(r.key) && !/^frame$/i.test(r.key));
+
+      if (block.image && block.image.width && block.image.height) {
+        base.arenaImagePixelW = block.image.width;
+        base.arenaImagePixelH = block.image.height;
+      }
+
+      let mockupFrame = null;
+      let frameExplicit = false;
+      const frameRow = rawMetaRows.find(r => /^frame$/i.test(r.key));
+      if (frameRow) {
+        frameExplicit = true;
+        const v = frameRow.value.trim().toLowerCase();
+        if (v === 'phone' || v === 'tablet' || v === 'browser') mockupFrame = v;
+        else mockupFrame = null;
+      }
+      if (
+        !frameExplicit &&
+        (base.blockKind === 'image' || base.blockKind === 'gif') &&
+        base.arenaImagePixelW &&
+        base.arenaImagePixelH
+      ) {
+        mockupFrame = inferMockupFrameFromDimensions(base.arenaImagePixelW, base.arenaImagePixelH);
+      }
+      base.mockupFrame = mockupFrame;
 
       base.arenaDescriptionRaw = descStr || null;
       base.arenaBodyMarkdown = bodyFinal;
@@ -1919,6 +2016,28 @@
         card.className = 'item-file-card';
         card.textContent = (item.alt || 'File').replace(/\.[^/.]+$/, '') || 'Attachment';
         div.appendChild(card);
+      } else if (
+        (bk === 'image' || bk === 'gif') &&
+        item.mockupFrame &&
+        typeof window.generateDeviceMockupFrame === 'function' &&
+        item.arenaImagePixelW &&
+        item.arenaImagePixelH &&
+        item.src
+      ) {
+        const wrap = document.createElement('div');
+        wrap.className = 'item-mockup item-mockup--' + item.mockupFrame;
+        const stroke = (getComputedStyle(document.documentElement).getPropertyValue('--fg') || '#111').trim() || '#111111';
+        const clipId = 'mf-' + String(item.id).replace(/[^a-zA-Z0-9_-]/g, '-') + '-t';
+        wrap.innerHTML = window.generateDeviceMockupFrame({
+          device: item.mockupFrame,
+          imageSrc: item.src,
+          imageW: item.arenaImagePixelW,
+          imageH: item.arenaImagePixelH,
+          url: mockupUrlBarLabel(item),
+          stroke,
+          clipId
+        });
+        div.appendChild(wrap);
       } else {
         const img = document.createElement('img');
         img.alt = item.alt;
@@ -1955,15 +2074,25 @@
       const tile = tileEls[col] && tileEls[col][row];
       if (!tile) return;
       const img = tile.querySelector('img');
-      if (!img) return;
+      const svgImg = tile.querySelector('.item-mockup svg image');
+      if (!img && !svgImg) return;
       const hd = new Image();
       hd.onload = () => {
         const swap = () => {
-          if (!img.isConnected) return;
-          requestAnimationFrame(() => {
-            if (!img.isConnected) return;
-            img.src = item.srcHD;
-          });
+          if (img && img.isConnected) {
+            requestAnimationFrame(() => {
+              if (!img.isConnected) return;
+              img.src = item.srcHD;
+            });
+          } else if (svgImg && svgImg.isConnected) {
+            requestAnimationFrame(() => {
+              if (!svgImg.isConnected) return;
+              svgImg.setAttribute('href', item.srcHD);
+              try {
+                svgImg.setAttributeNS('http://www.w3.org/1999/xlink', 'href', item.srcHD);
+              } catch (_) {}
+            });
+          }
         };
         if (typeof hd.decode === 'function') {
           hd.decode().then(swap).catch(swap);
@@ -1993,7 +2122,7 @@
     /** Visible media / item box, not the full tile (tile ≈ ⅓ of stage — tile-based caps limited zoom ~3×). */
     function focusContentBounds(tileEl) {
       if (!tileEl) return null;
-      const media = tileEl.querySelector('.item img, .item video');
+      const media = tileEl.querySelector('.item img, .item video, .item-mockup svg');
       if (media) {
         const r = media.getBoundingClientRect();
         if (r.width > 1 && r.height > 1) return r;
@@ -2836,6 +2965,33 @@
         }
         lbMediaMount.appendChild(wrap);
         return;
+      }
+
+      if (
+        (bk === 'image' || bk === 'gif') &&
+        item.mockupFrame &&
+        typeof window.generateDeviceMockupFrame === 'function' &&
+        item.arenaImagePixelW &&
+        item.arenaImagePixelH
+      ) {
+        const hi = (item.srcHD && String(item.srcHD).trim()) || item.src || '';
+        if (hi) {
+          const wrap = document.createElement('div');
+          wrap.className = 'lb-mockup-wrap item-mockup item-mockup--' + item.mockupFrame;
+          const stroke = (getComputedStyle(document.documentElement).getPropertyValue('--fg') || '#111').trim() || '#111111';
+          const clipId = 'mf-' + String(item.id).replace(/[^a-zA-Z0-9_-]/g, '-') + '-lb';
+          wrap.innerHTML = window.generateDeviceMockupFrame({
+            device: item.mockupFrame,
+            imageSrc: hi,
+            imageW: item.arenaImagePixelW,
+            imageH: item.arenaImagePixelH,
+            url: mockupUrlBarLabel(item),
+            stroke,
+            clipId
+          });
+          lbMediaMount.appendChild(wrap);
+          return;
+        }
       }
 
       const img = document.createElement('img');
