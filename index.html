@@ -1247,6 +1247,11 @@
         if (im.width && im.height) {
           base.arenaDimensions = `${im.width} × ${im.height}px`;
         }
+        if (block.source && block.source.url) {
+          try {
+            base.arenaSourceHostname = new URL(block.source.url).hostname.replace(/^www\./, '');
+          } catch (_) {}
+        }
         return finishArenaItem(block, base);
       }
 
@@ -1344,6 +1349,11 @@
           if (block.image.alt_text) {
             base.arenaImageAlt = block.image.alt_text;
             base.alt = block.image.alt_text;
+          }
+          if (block.source && block.source.url) {
+            try {
+              base.arenaSourceHostname = new URL(block.source.url).hostname.replace(/^www\./, '');
+            } catch (_) {}
           }
           return finishArenaItem(block, base);
         }
@@ -1585,14 +1595,60 @@
       return null;
     }
 
-    function mockupUrlBarLabel(item) {
-      const u = item && item.arenaProjectUrl;
-      if (u && typeof u === 'string') {
+    function truncateUrlBarHostname(host, maxLen) {
+      const s = String(host || '').replace(/^www\./i, '').trim();
+      if (!s) return '';
+      return s.length > maxLen ? `${s.slice(0, Math.max(1, maxLen - 1))}…` : s;
+    }
+
+    /** First external http(s) host, else bare domain-like token (not Are.na / asset filenames). */
+    function extractHostFromDescriptionText(text) {
+      if (!text || typeof text !== 'string') return '';
+      const urlRe = /https?:\/\/[^\s\]<>"')]+/gi;
+      let m;
+      while ((m = urlRe.exec(text)) !== null) {
+        let raw = m[0].replace(/[.,;:!?)]+$/, '');
         try {
-          return new URL(u).hostname.replace(/^www\./, '');
+          const u = new URL(raw);
+          if (!isArenaInternalUrl(u.href)) return u.hostname.replace(/^www\./, '');
         } catch (_) {}
       }
-      return 'site';
+      const domainRe = /\b((?:[a-z0-9-]+\.)+[a-z]{2,24})\b/gi;
+      const skip = /^(example\.com|localhost|are\.na)$/i;
+      while ((m = domainRe.exec(text)) !== null) {
+        const host = m[1].replace(/^www\./i, '');
+        const low = host.toLowerCase();
+        if (skip.test(low) || low.endsWith('.are.na')) continue;
+        if (/\.(png|jpe?g|gif|webp|svg|avif|css|js|json|md)$/i.test(low)) continue;
+        return host;
+      }
+      return '';
+    }
+
+    function mockupUrlBarLabel(item) {
+      const fallback = 'website.com';
+      if (!item) return fallback;
+
+      if (item.arenaProjectUrl && typeof item.arenaProjectUrl === 'string') {
+        try {
+          const h = new URL(item.arenaProjectUrl).hostname.replace(/^www\./, '');
+          if (h) return truncateUrlBarHostname(h, 34);
+        } catch (_) {}
+      }
+
+      if (item.arenaSourceHostname && String(item.arenaSourceHostname).trim()) {
+        return truncateUrlBarHostname(item.arenaSourceHostname, 34);
+      }
+
+      const blobs = [item.arenaDescriptionRaw, item.arenaBodyMarkdown, item.arenaBlockTitle]
+        .filter(Boolean)
+        .map(String);
+      for (let i = 0; i < blobs.length; i++) {
+        const h = extractHostFromDescriptionText(blobs[i]);
+        if (h) return truncateUrlBarHostname(h, 34);
+      }
+
+      return fallback;
     }
 
     /** Attach shared Are.na fields used by the lightbox (description, hashtags → tags, title, alt). */
