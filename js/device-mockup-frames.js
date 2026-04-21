@@ -154,10 +154,15 @@
     const imgEl = imageSrc
       ? `<image href="${imageSrc}" x="${screenX}" y="${screenY}" width="${screenW}" height="${screenH}" clip-path="url(#${clipId})" preserveAspectRatio="xMidYMid slice"/>`
       : '';
+    const br = Math.min(r, Math.floor(Math.min(screenW, screenH) / 2));
+    const clipD =
+      `M ${screenX} ${screenY} L ${screenX + screenW} ${screenY} L ${screenX + screenW} ${screenY + screenH - br} ` +
+      `A ${br} ${br} 0 0 1 ${screenX + screenW - br} ${screenY + screenH} L ${screenX + br} ${screenY + screenH} ` +
+      `A ${br} ${br} 0 0 1 ${screenX} ${screenY + screenH - br} L ${screenX} ${screenY} Z`;
     return `<svg width="100%" viewBox="0 0 ${svgW} ${svgH}" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <clipPath id="${clipId}">
-      <rect x="${screenX}" y="${screenY}" width="${screenW}" height="${screenH}" rx="0"/>
+      <path d="${clipD}"/>
     </clipPath>
   </defs>
   ${imgEl}
